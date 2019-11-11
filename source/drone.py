@@ -52,7 +52,7 @@ class Drone:
               self.tourTaken.append(self.curPos)  
     
     def getState(self):
-        time2dock = self.maxCharge - self.currentCharge
-        return self.curPos, self.tourTaken, self.isDocked, time2dock
+        time2release = self.maxCharge - self.currentCharge
+        return self.curPos, self.tourTaken, self.isDocked, time2release
         
         
