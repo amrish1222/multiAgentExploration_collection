@@ -44,7 +44,7 @@ class Drone:
     
     
     def updateCharge(self, timeStep):
-        self.currentCharge += timeStep
+        self.currentCharge -= timeStep
         if self.currentCharge >= self.maxCharge and self.isDocked:
             self.isDocked = False
     
