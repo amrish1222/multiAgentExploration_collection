@@ -33,6 +33,7 @@ class Drone:
         self.updateTour()
     
     def updatePos(self, parentPos, timeStep):
+        self.parentPos = parentPos
         if self.isDocked:
             newPosition = parentPos
         else:
