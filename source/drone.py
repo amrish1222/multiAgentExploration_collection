@@ -19,11 +19,12 @@ class Drone:
         self.parentPos = [0,0] # parent mobile robot position
         self.dockingThreshold = 0.1 # docking range from center of drone
         self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor
+        self.maxVelocity = 0.5 # m/s
         
     def setParams(self, vel, dock):
-        self.curVel = vel
+        self.curVel = vel * self.maxVelocity
         distFromParent = np.linalg.norm(self.curPos - self.parentPos)
-        if distFromParent < self.dockingThreshold:
+        if dock and distFromParent < self.dockingThreshold:
             self.isDocked = True
         else:
             print("Can not dock: out of dock range")
@@ -54,6 +55,6 @@ class Drone:
     
     def getState(self):
         time2release = self.maxCharge - self.currentCharge * self.chargeTimeFactor
-        return self.curPos, self.tourTaken, self.isDocked, time2release
+        return self.curPos, self.curVel, self.tourTaken, self.isDocked, time2release
         
         

@@ -14,9 +14,10 @@ class MobileRobot:
         self.size = 2 # mobile robot square side
         self.tourTaken = [] # list of positions that the MR has taken
         self.resourcePt = [] # detected resource collection pts
+        self.maxVelocity = 0.05 # m/s
         
     def setParams(self, vel, dock):
-        self.curVel = vel
+        self.curVel = vel * self.maxVelocity
     
     def updatePos(self, parentPos, timeStep):
         if self.isDocked:
@@ -31,4 +32,4 @@ class MobileRobot:
               self.tourTaken.append(self.curPos)
               
     def getState(self):
-        return self.curPos, self.tourTaken
+        return self.curPos, self.curVel, self.tourTaken
