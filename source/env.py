@@ -17,6 +17,8 @@ class Env:
         self.numCollectionPts = 20
         self.areaLength = 20 # in meters
         self.collectionPts = self.genCollectionPts(self.numCollectionPts)
+        self.dronesState = self.getDronesStates
+        self.mobileRobsState = self.getMobileRobsStates
         
     def initDrones(self, n):
         drones = []
@@ -35,6 +37,18 @@ class Env:
         pts = self.areaLength * pts
         return pts
     
+    def getDronesStates(self):
+        states = []
+        for drone in self.drones:
+            states.append(drone.getState)
+        return states
+            
+    def getMobileRobsStates(self):
+        states = []
+        for mr in self.mobilerobots:
+            states.append(mr.getState)
+        return states
+            
     def stepDrones(self):
         # have to decide on the action space
         # waypoints or velocity
