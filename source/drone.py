@@ -18,6 +18,7 @@ class Drone:
         self.currentCharge = 50 # current Charge in seconds
         self.parentPos = [0,0] # parent mobile robot position
         self.dockingThreshold = 0.1 # docking range from center of drone
+        self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor
         
     def setParams(self, vel, dock):
         self.curVel = vel
@@ -52,7 +53,7 @@ class Drone:
               self.tourTaken.append(self.curPos)  
     
     def getState(self):
-        time2release = self.maxCharge - self.currentCharge
+        time2release = self.maxCharge - self.currentCharge * self.chargeTimeFactor
         return self.curPos, self.tourTaken, self.isDocked, time2release
         
         

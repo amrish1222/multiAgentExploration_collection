@@ -33,7 +33,7 @@ class Env:
         return mRobs
     
     def genCollectionPts(self, n):
-        pts = np.random.rand(n,2)
+        pts = np.random.randint(n,2)
         pts = self.areaLength * pts
         return pts
     
