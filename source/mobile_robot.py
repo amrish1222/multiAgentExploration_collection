@@ -7,7 +7,6 @@
 
 import numpy as np
 
-
 class MobileRobot:
     def __init__(self):
         self.curPos = np.array([0,0])
