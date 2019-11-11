@@ -14,6 +14,9 @@ class Env:
     def __init__(self, numDrones, numMobileRobs):
         self.drones = self.initDrones(numDrones)
         self.mobilerobots = self.initMobileRobs(numMobileRobs)
+        self.numCollectionPts = 20
+        self.areaLength = 20 # in meters
+        self.collectionPts = self.genCollectionPts(self.numCollectionPts)
         
     def initDrones(self, n):
         drones = []
@@ -27,4 +30,22 @@ class Env:
             mRobs.append(MobileRobot())
         return mRobs
     
+    def genCollectionPts(self, n):
+        pts = np.random.rand(n,2)
+        pts = self.areaLength * pts
+        return pts
     
+    def stepDrones(self):
+        # have to decide on the action space
+        # waypoints or velocity
+        pass
+    
+    def stepMobileRobs(self):
+        pass
+    
+    def render(self):
+        pass
+    
+    
+    
+        
