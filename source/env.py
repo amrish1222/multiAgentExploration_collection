@@ -49,13 +49,48 @@ class Env:
             states.append(mr.getState)
         return states
             
-    def stepDrones(self):
+    def stepDrones(self, actions, isdocks):
         # have to decide on the action space
         # waypoints or velocity
-        pass
+        # 0 - no motion
+        # 1 - up
+        # 2 - left
+        # 3 - down
+        # 4 - right
+        for action, drone, isdock in zip(actions, self.drones, isdocks):
+            vel = np.array([0,0])
+            if action == 0:
+                pass
+            elif action == 1:
+                vel[1] = 1
+            elif action == 2:
+                vel[0] = -1
+            elif action == 3:
+                vel[1] = -1
+            elif action == 4:
+                vel[0] = 1
+            drone.setParams(vel,isdock)
+            
     
-    def stepMobileRobs(self):
-        pass
+    def stepMobileRobs(self, actions):
+        # 0 - no motion
+        # 1 - up
+        # 2 - left
+        # 3 - down
+        # 4 - right
+        for action, mobileRobot in zip(actions, self.mobilerobots):
+            vel = np.array([0,0])
+            if action == 0:
+                pass
+            elif action == 1:
+                vel[1] = 1
+            elif action == 2:
+                vel[0] = -1
+            elif action == 3:
+                vel[1] = -1
+            elif action == 4:
+                vel[0] = 1
+            mobileRobot.setParams(vel)
     
     def render(self):
         pass
