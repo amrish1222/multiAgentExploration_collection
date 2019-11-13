@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author Amrish Bakaran
-# author Adhesh
+# author Adheesh
 # author Bala Murali
 # Copyright
 # brief Mobile robot class containing state, methods and history of the drone
@@ -16,14 +16,15 @@ class MobileRobot:
         self.resourcePt = [] # detected resource collection pts
         self.maxVelocity = 0.05 # m/s
         
-    def setParams(self, vel, dock):
+    def setParams(self, vel):
         self.curVel = vel * self.maxVelocity
     
-    def updatePos(self, parentPos, timeStep):
-        if self.isDocked:
-            newPosition = parentPos
-        else:
-            newPosition = self.curPos + self.curVel * timeStep
+    def updateState(self, timeStep):
+        self.updatePos(timeStep)
+        self.updateTour()
+
+    def updatePos(self, timeStep):
+        newPosition = self.curPos + self.curVel * timeStep
         self.curPos = newPosition
     
     def updateTour(self):

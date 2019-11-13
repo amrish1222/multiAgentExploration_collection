@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author Amrish Bakaran
-# author Adhesh
+# author Adheesh
 # author Bala Murali
 # Copyright
 # brief Drone class containing state, methods and history of the drone
