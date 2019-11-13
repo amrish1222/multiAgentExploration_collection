@@ -9,8 +9,8 @@ import numpy as np
 
 class Drone:
     def __init__(self):
-        self.curPos = np.array([0,0])
-        self. curVel = np.array([0,0])
+        self.curPos = np.array([100,800])
+        self.curVel = np.array([0,0])
         self.size = 0.4 # Diameter of the drone
         self.tourTaken = [] # list of positions that the drone has taken
         self.isDocked = False # whether the drone is docked to the mobile robot

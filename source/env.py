@@ -10,7 +10,7 @@ from mobile_robot import MobileRobot
 
 import numpy as np
 import pygame
-
+import random
 # screen_width=1000
 # screen_height=1000
 # BLACK=(0,0,0)
@@ -22,7 +22,7 @@ class Env:
     self.mobilerobots = self.initMobileRobs(numMobileRobs)
     self.numCollectionPts = 20
     self.areaLength = 20 # in meters
-    self.collectionPts = self.genCollectionPts(self.numCollectionPts)
+    
     
     #CONSTANTS
     self.screen_width=1000
@@ -37,9 +37,10 @@ class Env:
     #IMAGES
     self.drone_surface=self.drone_icon(numDrones)
     self.rover_surface=self.rover_icon()
+    self.collectionPts = self.genCollectionPts(self.numCollectionPts,self.rover_surface)
 
     #MAIN LOOP
-    self.render(self.screen,self.backg,self.drone_surface,self.rover_surface,self.drones,self.mobilerobots,numDrones)
+    self.render(self.screen,self.backg,self.drone_surface,self.rover_surface,self.drones,self.mobilerobots,numDrones,self.numCollectionPts,self.collectionPts)
       
       
   def initDrones(self, n):
@@ -54,10 +55,11 @@ class Env:
         mRobs.append(MobileRobot())
     return mRobs
 
-  def genCollectionPts(self, n):
-    pts = np.random.rand(n,2)
-    pts = self.areaLength * pts
-    return pts
+  def genCollectionPts(self, n,rover_surface):
+    resource_list=[]
+    for i in range(0,n):
+      resource_list.append((random.randint(0, 1000-rover_surface.get_size()[0]),random.randint(0, 1000-rover_surface.get_size()[1])))
+    return resource_list
   
   def stepDrones(self):
     # have to decide on the action space
@@ -96,16 +98,33 @@ class Env:
   def rover_blit(self,screen,rover_surface,x,y):
     self.screen.blit(rover_surface,(x,y))
 
-  def render(self,screen,background,drone_surface,rover_surface,drones,mobilerobots,n):
-  	running = True
-  	BLACK=(0,0,0)
-  	while running:
-  		for event in pygame.event.get():
-  			if event.type == pygame.QUIT:
-  				running = False
-  		self.screen.fill(BLACK)
-  		self.screen.blit(background,(0,0))
-  		self.rover_blit(self.screen,rover_surface,self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
-  		for i in range(0,n):
-  			self.drone_blit(self.screen,drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
-  		pygame.display.update()
+  def resources_blit(self,resource_list):
+    AQUA=(0,255,255)
+    pygame.draw.circle(self.screen, AQUA, (resource_list[0],resource_list[1]), 5, 5) 
+
+  def render(self,screen,background,drone_surface,rover_surface,drones,mobilerobots,num_of_drones,num_of_resources,resource_list):
+    running = True
+    BLACK=(0,0,0)
+    
+    while running:
+      for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+          running = False
+
+      #INIT
+      self.screen.fill(BLACK)
+      self.screen.blit(background,(0,0))
+
+      #RESOURCES
+      for i in range(0,num_of_resources):
+        self.resources_blit(resource_list[i])
+
+      #ROVER
+      self.rover_blit(self.screen,rover_surface,self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
+
+      #DRONE
+      for i in range(0,num_of_drones):
+        self.drone_blit(self.screen,drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
+      
+      #UPDATE
+      pygame.display.update()

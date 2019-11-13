@@ -9,7 +9,7 @@ import numpy as np
 
 class MobileRobot:
     def __init__(self):
-        self.curPos = np.array([0,0])
+        self.curPos = np.array([500,500])
         self. curVel = np.array([0,0])
         self.size = 2 # mobile robot square side
         self.tourTaken = [] # list of positions that the MR has taken
