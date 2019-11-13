@@ -97,17 +97,15 @@ class Env:
     self.screen.blit(rover_surface,(x,y))
 
   def render(self,screen,background,drone_surface,rover_surface,drones,mobilerobots,n):
-    running = True
-    BLACK=(0,0,0)
-    while running:
-    	for event in pygame.event.get():
-    		if event.type == pygame.QUIT:
-    			running = False
-    	self.screen.fill(BLACK)
-    	self.screen.blit(background,(0,0))
-
-        self.rover_blit(self.screen,rover_surface,self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
-    	for i in range(0,n):
-            self.drone_blit(self.screen,drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
-        
-        pygame.display.update()
+  	running = True
+  	BLACK=(0,0,0)
+  	while running:
+  		for event in pygame.event.get():
+  			if event.type == pygame.QUIT:
+  				running = False
+  		self.screen.fill(BLACK)
+  		self.screen.blit(background,(0,0))
+  		self.rover_blit(self.screen,rover_surface,self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
+  		for i in range(0,n):
+  			self.drone_blit(self.screen,drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
+  		pygame.display.update()
