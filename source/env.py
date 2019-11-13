@@ -9,6 +9,12 @@ from drone import Drone
 from mobile_robot import MobileRobot
 
 import numpy as np
+import pygame
+
+# screen_width=1000
+# screen_height=1000
+# BLACK=(0,0,0)
+# GREEN=(0,255,0)
 
 class Env:
     def __init__(self, numDrones, numMobileRobs):
@@ -17,8 +23,25 @@ class Env:
         self.numCollectionPts = 20
         self.areaLength = 20 # in meters
         self.collectionPts = self.genCollectionPts(self.numCollectionPts)
-        self.dronesState = self.getDronesStates
-        self.mobileRobsState = self.getMobileRobsStates
+        
+        #CONSTANTS
+        self.screen_width=1000
+        self.screen_height=1000
+        # self.BLACK=(0,0,0)
+        
+        #INIT
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
+        self.caption()
+        self.backg=self.background()
+        
+        #IMAGES
+        self.drone_surface=self.drone_icon(numDrones)
+        self.rover_surface=rover_icon(numMobileRobs)
+
+        #MAIN LOOP
+        self.render(screen,backg,drone_surface,rover_surface,drones,mobilerobots,numDrones)
+        
         
     def initDrones(self, n):
         drones = []
@@ -33,68 +56,62 @@ class Env:
         return mRobs
     
     def genCollectionPts(self, n):
-        pts = np.random.randint(n,2)
+        pts = np.random.rand(n,2)
         pts = self.areaLength * pts
         return pts
     
-    def getDronesStates(self):
-        states = []
-        for drone in self.drones:
-            states.append(drone.getState)
-        return states
-            
-    def getMobileRobsStates(self):
-        states = []
-        for mr in self.mobilerobots:
-            states.append(mr.getState)
-        return states
-            
-    def stepDrones(self, actions, isdocks):
+    def stepDrones(self):
         # have to decide on the action space
         # waypoints or velocity
-        # 0 - no motion
-        # 1 - up
-        # 2 - left
-        # 3 - down
-        # 4 - right
-        for action, drone, isdock in zip(actions, self.drones, isdocks):
-            vel = np.array([0,0])
-            if action == 0:
-                pass
-            elif action == 1:
-                vel[1] = 1
-            elif action == 2:
-                vel[0] = -1
-            elif action == 3:
-                vel[1] = -1
-            elif action == 4:
-                vel[0] = 1
-            drone.setParams(vel,isdock)
-            
-    
-    def stepMobileRobs(self, actions):
-        # 0 - no motion
-        # 1 - up
-        # 2 - left
-        # 3 - down
-        # 4 - right
-        for action, mobileRobot in zip(actions, self.mobilerobots):
-            vel = np.array([0,0])
-            if action == 0:
-                pass
-            elif action == 1:
-                vel[1] = 1
-            elif action == 2:
-                vel[0] = -1
-            elif action == 3:
-                vel[1] = -1
-            elif action == 4:
-                vel[0] = 1
-            mobileRobot.setParams(vel)
-    
-    def render(self):
         pass
     
+    def stepMobileRobs(self):
+        pass
     
+    def caption(self):
+        pygame.display.set_caption('Multi-Agent Explorer')
+        icon=pygame.image.load('Images/icon.png')
+        pygame.display.set_icon(icon)
+
+    def background(self):
+        background=pygame.image.load('Images/terrain.jpeg')
+        background=pygame.transform.scale(background, (1400, 1000))
+        return background
+
+    def drone_icon(self,n):
+        drone_icon=pygame.image.load('Images/drone.ico')
+        drone_icon=pygame.transform.scale(drone_icon, (10, 10))
+        num_of_drones=n
+        drone_list=[]
+        for i in range(0,num_of_drones):
+            drone_list.append(pygame.image.load('Images/drone.ico'))
+        return drone_list
+    
+    def rover_icon(self,n):
+        robot_icon=pygame.image.load('Images/rover2.ico')
+        return robot_icon
+
+    def drone_blit(self,screen,drone_surface,x,y):
+        self.screen.blit(drone_surface[i],(x,y))
+
+    def rover_blit(self,screen,rover_surface,x,y):
+        self.screen.blit(rover_surface,(x,y))
+
+    def render(self,screen,background,drone_surface,rover_surface,drones,mobilerobots,n):
+        running = True
+        BLACK=(0,0,0)
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            self.screen.fill(BLACK)
+            self.screen.blit(self.background,(0,0))
+            self.rover_blit(self.screen,self.rover_surface,
+                mRobs.curPos[0],mRobs.curPos[1])
+
+            for i in range(0,n):
+                self.drone_blit(self.screen,self.drone_surface,
+                    self.drones[i][0], self.drones[i][1])
+            pygame.display.update()
     
         
