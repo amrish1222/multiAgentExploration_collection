@@ -107,11 +107,11 @@ class Env:
             self.screen.fill(BLACK)
             self.screen.blit(self.background,(0,0))
             self.rover_blit(self.screen,self.rover_surface,
-                mRobs.curPos[0],mRobs.curPos[1])
+                self.mobilerobots.getState[0][0],self.mobilerobots.getState[0][1])
 
             for i in range(0,n):
-                self.drone_blit(self.screen,self.drone_surface,
-                    self.drones[i][0], self.drones[i][1])
+                self.drone_blit(self.screen,self.drone_surface[i],
+                    self.drones[i].getState[0][0], self.drones[i].getState[0][1])
             pygame.display.update()
     
         
