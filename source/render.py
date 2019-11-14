@@ -29,15 +29,15 @@ class Render:
 		#IMAGES
 		self.drone_surface=self.drone_icon(numDrones)
 		self.rover_surface=self.rover_icon()
-		self.collectionPts = self.genCollectionPts(self.numCollectionPts,self.rover_surface)
+		self.collectionPts = self.genCollectionPts()
 
 		#MAIN LOOP
-		self.render(self.screen,self.backg,self.drone_surface,self.rover_surface,self.drones,self.mobilerobots,numDrones,numMobileRobots,self.numCollectionPts,self.collectionPts)
+		self.render(self.drone_surface,self.rover_surface,self.drones,self.mobilerobots,numDrones)
 
-	def genCollectionPts(self, n,rover_surface):
+	def genCollectionPts(self):
 	  resource_list=[]
-	  for i in range(0,n):
-	    resource_list.append((random.randint(0, 1000-rover_surface.get_size()[0]),random.randint(0, 1000-rover_surface.get_size()[1])))
+	  for i in range(0,self.numCollectionPts):
+	    resource_list.append((random.randint(0, 1000-self.rover_surface.get_size()[0]),random.randint(0, 1000-self.rover_surface.get_size()[1])))
 	  return resource_list
 
 	def m_to_pix(self,x):
@@ -66,17 +66,17 @@ class Render:
 	  robot_icon=pygame.image.load('Images/rover2.ico')
 	  return robot_icon
 
-	def drone_blit(self,screen,drone_surface,x,y):
+	def drone_blit(self,drone_surface,x,y):
 	  self.screen.blit(drone_surface,(x,y))
 
-	def rover_blit(self,screen,rover_surface,x,y):
-	  self.screen.blit(rover_surface,(x,y))
+	def rover_blit(self,x,y):
+	  self.screen.blit(self.rover_surface,(x,y))
 
 	def resources_blit(self,resource_list):
 	  AQUA=(0,255,255)
 	  pygame.draw.circle(self.screen, AQUA, (resource_list[0],resource_list[1]), 5, 5) 
 
-	def render(self,screen,background,drone_surface,rover_surface,drones,mobilerobots,num_of_drones,num_of_mobilerobots,num_of_resources,resource_list):
+	def render(self,drone_surface,rover_surface,drones,mobilerobots,num_of_drones):
 		running = True
 		BLACK=(0,0,0)
 
@@ -87,18 +87,18 @@ class Render:
 
 			#INIT
 			self.screen.fill(BLACK)
-			self.screen.blit(background,(0,0))
+			self.screen.blit(self.backg,(0,0))
 
 			#RESOURCES
-			for i in range(0,num_of_resources):
-			  self.resources_blit(resource_list[i])
+			for i in range(0,self.numCollectionPts):
+			  self.resources_blit(self.collectionPts[i])
 
 			#ROVER
-			self.rover_blit(self.screen,rover_surface,self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
+			self.rover_blit(self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])
 
 			#DRONE
 			for i in range(0,num_of_drones):
-			  self.drone_blit(self.screen,drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
+			  self.drone_blit(drone_surface[i],self.drones[i].getState()[0][0], self.drones[i].getState()[0][1])
 
 			#UPDATE
 			pygame.display.update()
