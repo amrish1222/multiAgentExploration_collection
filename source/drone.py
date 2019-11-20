@@ -6,10 +6,11 @@
 # brief Drone class containing state, methods and history of the drone
 
 import numpy as np
+from constants import *
 
 class Drone:
     def __init__(self):
-        self.curPos = np.array([100,800])
+        self.curPos = np.array([10,5])
         self.curVel = np.array([0,0])
         self.size = 0.4 # Diameter of the drone
         self.tourTaken = [] # list of positions that the drone has taken
@@ -19,15 +20,17 @@ class Drone:
         self.parentPos = [0,0] # parent mobile robot position
         self.dockingThreshold = 0.1 # docking range from center of drone
         self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor
-        self.maxVelocity = 0.5 # m/s
+        self.maxVelocity = maxDroneVelocity # m/s
         
     def setParams(self, vel, dock):
+        print("drone set params")
         self.curVel = vel * self.maxVelocity
         distFromParent = np.linalg.norm(self.curPos - self.parentPos)
-        if dock and distFromParent < self.dockingThreshold:
-            self.isDocked = True
-        else:
-            print("Can not dock: out of dock range")
+        if dock:
+            if distFromParent < self.dockingThreshold:
+                self.isDocked = True
+            else:
+                print("Can not dock: out of dock range")
             
     def updateState(self, parentPos, timeStep):
         self.updatePos(parentPos,timeStep)
