@@ -9,4 +9,4 @@ screenHeight = 1000
 screenWidth = 1000
 arenaWidth = 20
 numDrone = 2
-numMobileRobots = 1 
+numMobileRobots = 1
