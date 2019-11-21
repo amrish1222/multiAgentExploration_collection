@@ -19,22 +19,19 @@ mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
 
 while True:
-	droneActions = []
-	docks = []
-	for i in range(2):
-		droneActions.append(dAgent[i].getAction())
-		docks.append(False)
-	mrActions = []
-	for i in range(1):
-		mrActions.append(mAgent.getAction())
-
-#	print("droneActions:", droneActions)
-#	print("mrActions:", mrActions)
+    droneActions = []
+    docks = []
+    for i in range(2):
+        droneActions.append(dAgent[i].getAction())
+        docks.append(False)
+    mrActions = []
+    for i in range(1):
+        mrActions.append(mAgent.getAction())
+    
     mrPos, mrVel = env.stepMobileRobs(mrActions)
     dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     env.render()
     print(dronePos[0], droneCharge)
-#    time.sleep(0.5)
-
+    
     if env.checkClose() or done:
         break
