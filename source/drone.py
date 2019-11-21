@@ -61,8 +61,13 @@ class Drone:
     
     def updateTour(self):
         if len(self.tourTaken) > 0:
-            if not self.tourTaken[-1] == self.curPos:
-              self.tourTaken.append(self.curPos)  
+            #print((self.tourTaken[-1] == self.curPos).all())
+            if not (self.tourTaken[-1] == self.curPos).all():
+                self.tourTaken.append(self.curPos)
+                #print(len(self.tourTaken))
+        else:
+            self.tourTaken.append(self.curPos)
+
     
     def getState(self):
         if self.isDocked:

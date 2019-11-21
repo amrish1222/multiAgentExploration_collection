@@ -106,6 +106,7 @@ class Env:
     def checkClose(self):
         return self.display.check()
 
+
     def render(self):
         self.display.render(self.drones,self.mobilerobots)
             

@@ -23,6 +23,7 @@ while True:
     docks = []
     for i in range(2):
         droneActions.append(dAgent[i].getAction())
+        #droneActions.append(0)
         docks.append(False)
     mrActions = []
     for i in range(1):
@@ -31,7 +32,6 @@ while True:
     mrPos, mrVel = env.stepMobileRobs(mrActions)
     dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     env.render()
-    print(mrPos[0], dronePos[0], droneCharge)
     
     if env.checkClose() or done:
         break
