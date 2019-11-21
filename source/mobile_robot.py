@@ -26,7 +26,7 @@ class MobileRobot:
 
     def updatePos(self, timeStep):
         newPosition = self.curPos + self.curVel * timeStep
-        self.curPos = newPosition
+        self.curPos = np.round(newPosition,3)
     
     def updateTour(self):
         if len(self.tourTaken) > 0:

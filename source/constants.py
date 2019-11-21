@@ -18,5 +18,11 @@ AQUA=(0,255,255)
 GREEN_ALPHA=(0,255,0,100)
 BLUE_ALPHA=(0,0,255,100)
 timeStep=0.1
-maxDroneVelocity=2
+
 maxMobileRobVelocity=1
+
+
+## Drone Constants
+
+maxDroneVelocity= 2
+dockingThreshold = maxDroneVelocity * timeStep * 2
