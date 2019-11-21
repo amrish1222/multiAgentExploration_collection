@@ -87,8 +87,16 @@ class Render:
 			self.resources_blit(pt)
 		#print(self.collectionPts)
 
+		x_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[0]
+		y_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[1]
+
+		# if x_mob<0:
+		# 	x_mob=0
+		# elif x_mob>0:
+		# 	x_mob=self.screen_width-self.rover_surface.get_size()[0]
+
 		#ROVER
-		self.rover_blit(self.m_to_pix(self.mobilerobots[0].getState()[0])[0],self.m_to_pix(self.mobilerobots[0].getState()[0])[1])
+		self.rover_blit(x_mob,y_mob)
 		# self.rover_blit(self.m_to_pix((self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])))
 
 		#DRONE

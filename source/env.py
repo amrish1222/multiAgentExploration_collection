@@ -47,7 +47,7 @@ class Env:
     def genCollectionPts(self,n):
         resource_list=[]
         for i in range(0,n):
-          resource_list.append((random.randint(0, arenaWidth),random.randint(0, arenaHeight)))
+          resource_list.append((random.randint(1, arenaWidth-1),random.randint(1, arenaHeight-1)))
         return resource_list
       
     def stepDrones(self, actions, docks):
