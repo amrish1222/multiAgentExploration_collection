@@ -17,5 +17,11 @@ BLACK=(0,0,0)
 AQUA=(0,255,255)
 
 timeStep=0.1
-maxDroneVelocity=2
+
 maxMobileRobVelocity=1
+
+
+## Drone Constants
+
+maxDroneVelocity= 2
+dockingThreshold = maxDroneVelocity * timeStep * 2

@@ -10,7 +10,7 @@ from constants import *
 
 class Drone:
     def __init__(self):
-        self.curPos = np.array([10,5])
+        self.curPos = np.array([10,10])
         self.curVel = np.array([0,0])
         self.size = 0.4 # Diameter of the drone
         self.tourTaken = [] # list of positions that the drone has taken
@@ -18,7 +18,7 @@ class Drone:
         self.maxCharge = 50 # charge capacity in seconds
         self.currentCharge = 50 # current Charge in seconds
         self.parentPos = [0,0] # parent mobile robot position
-        self.dockingThreshold = 0.1 # docking range from center of drone
+        self.dockingThreshold = dockingThreshold # docking range from center of drone
         self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor
         self.instantCharge = True
         self.maxVelocity = maxDroneVelocity # m/s
@@ -43,19 +43,21 @@ class Drone:
             newPosition = parentPos
         else:
             newPosition = self.curPos + self.curVel * timeStep
-        self.curPos = newPosition
+        self.curPos = np.round(newPosition,3)
     
     
     def updateCharge(self, timeStep):
         self.currentCharge -= timeStep
+        
+        ## to use dock!
         if self.currentCharge >= self.maxCharge and self.isDocked:
             self.isDocked = False
         if self.isDocked:
-            if self.instantCharge:
-                self.currentCharge = self.maxCharge
-            else:
-                self.currentCharge += timeStep * self.chargeTimeFactor
-            
+            self.currentCharge += timeStep * self.chargeTimeFactor
+        
+        distFromParent = np.linalg.norm(self.curPos - self.parentPos)
+        if self.instantCharge and (distFromParent < self.dockingThreshold):
+            self.currentCharge = self.maxCharge
     
     def updateTour(self):
         if len(self.tourTaken) > 0:
@@ -67,6 +69,6 @@ class Drone:
             time2release = max(0,self.maxCharge - self.currentCharge * self.chargeTimeFactor)
         else:
             time2release = 0
-        return self.curPos, self.curVel, self.tourTaken, self.currentCharge, self.isDocked, time2release
+        return self.curPos, self.curVel, self.tourTaken, round(self.currentCharge, 3), self.isDocked, time2release
         
         
