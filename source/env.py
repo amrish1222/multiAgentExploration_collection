@@ -53,36 +53,55 @@ class Env:
     def stepDrones(self, actions, docks):
         # have to decide on the action space
         # waypoints or velocity
+        posOut = []
+        curChargeOut = []
+        velOut = []
+        isDockOut = []
+        done = False
         for drone, action, dock in zip(self.drones, actions, docks):
-        	vel = np.array([0,0])
-        	if action == 0:
-        		pass
-        	elif action == 1:
-        		vel[1] = 1
-        	elif action == 2:
-        		vel[0] = -1
-        	elif action == 3:
-        		vel[1] = -1
-        	elif action == 4:
-        		vel[0] = 1
-        	drone.setParams(vel,dock)
-        	drone.updateState(self.mobilerobots[0].getState()[0], self.timeStep)
+            vel = np.array([0,0])
+            if action == 0:
+                pass
+            elif action == 1:
+                vel[1] = 1
+            elif action == 2:
+                vel[0] = -1
+            elif action == 3:
+                vel[1] = -1
+            elif action == 4:
+                vel[0] = 1
+            drone.setParams(vel,dock)
+            drone.updateState(self.mobilerobots[0].getState()[0], self.timeStep)
+            curState = drone.getState()
+            posOut.append(curState[0])
+            velOut.append(curState[1])
+            curChargeOut.append(curState[3])
+            isDockOut.append(curState[4])
+            done = done or (curState[3] <= 0)
+        return posOut, velOut, curChargeOut, isDockOut, done
+            
 
     def stepMobileRobs(self, actions):
+        posOut = []
+        velOut = []
         for mr, action in zip(self.mobilerobots, actions):
-        	vel = np.array([0,0])
-        	if action == 0:
-        		pass
-        	elif action == 1:
-        		vel[1] = 1
-        	elif action == 2:
-        		vel[0] = -1
-        	elif action == 3:
-        		vel[1] = -1
-        	elif action == 4:
-        		vel[0] = 1
-        	mr.setParams(vel)
-        	mr.updateState(self.timeStep)
+            vel = np.array([0,0])
+            if action == 0:
+                pass
+            elif action == 1:
+                vel[1] = 1
+            elif action == 2:
+                vel[0] = -1
+            elif action == 3:
+                vel[1] = -1
+            elif action == 4:
+                vel[0] = 1
+            mr.setParams(vel)
+            mr.updateState(self.timeStep)
+            curState = mr.getState()
+            posOut.append(curState[0])
+            velOut.append(curState[1])
+        return posOut, velOut
 
     def checkClose(self):
         return self.display.check()

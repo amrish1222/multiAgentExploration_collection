@@ -13,23 +13,24 @@ import pygame
 import time 
 
 env = Env(2, 1)
-
+done = False
 while True:
-	droneActions = []
-	docks = []
-	for i in range(2):
-		droneActions.append(np.random.randint(1,5))
-		docks.append(False)
-	mrActions = []
-	for i in range(1):
-		mrActions.append(np.random.randint(1,5))
+    droneActions = []
+    docks = []
+    for i in range(2):
+        droneActions.append(np.random.randint(1,5))
+        docks.append(False)
+    mrActions = []
+    for i in range(1):
+        mrActions.append(np.random.randint(1,5))
 
-	print("droneActions:", droneActions)
-	print("mrActions:", mrActions)
-	env.stepMobileRobs(mrActions)
-	env.stepDrones(droneActions, docks)
-	env.render()
-	#time.sleep(0.1)
+#	print("droneActions:", droneActions)
+#	print("mrActions:", mrActions)
+    mrPos, mrVel = env.stepMobileRobs(mrActions)
+    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
+    env.render()
+    print(dronePos[0], droneCharge)
+#    time.sleep(0.5)
 
-	if env.checkClose():
-		break
+    if env.checkClose() or done:
+        break
