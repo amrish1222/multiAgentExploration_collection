@@ -10,13 +10,13 @@ from constants import *
 
 class Drone:
     def __init__(self):
-        self.curPos = np.array([10,10])
+        self.curPos = np.array([arenaWidth/2,arenaHeight/2])
         self.curVel = np.array([0,0])
         self.size = 0.4 # Diameter of the drone
         self.tourTaken = [] # list of positions that the drone has taken
         self.isDocked = False # whether the drone is docked to the mobile robot
-        self.maxCharge = 50 # charge capacity in seconds
-        self.currentCharge = 50 # current Charge in seconds
+        self.maxCharge = MAX_CHARGE # charge capacity in seconds
+        self.currentCharge = MAX_CHARGE # current Charge in seconds
         self.parentPos = [0,0] # parent mobile robot position
         self.dockingThreshold = dockingThreshold # docking range from center of drone
         self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor

@@ -22,8 +22,8 @@ while True:
     droneActions = []
     docks = []
     for i in range(2):
-        droneActions.append(dAgent[i].getAction())
-        #droneActions.append(0)
+#        droneActions.append(dAgent[i].getAction())
+        droneActions.append(1)
         docks.append(False)
     mrActions = []
     for i in range(1):
