@@ -13,15 +13,16 @@ from drone import Drone
 from mobile_robot import MobileRobot
 
 class Render:
-	def __init__(self,numDrones,numMobileRobots,d,mr,coll_p):
-		self.drones=d
-		self.mobilerobots=mr
-		self.collectionPts = coll_p
+	def __init__(self,numDrones,numMobileRobots,drone,mobile_robot,coll_pts):
+		self.drones=drone
+		self.mobilerobots=mobile_robot
+		self.collectionPts = coll_pts
 		self.screen_width=screenWidth
 		self.screen_height=screenHeight
 		#INIT
 		pygame.init()
 		self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
+		self.alpha_surface=pygame.Surface((self.screen_width,self.screen_height), pygame.SRCALPHA)
 		self.caption()
 		self.backg=self.background()
     
@@ -42,36 +43,46 @@ class Render:
 		return int((self.screen_width/arenaWidth)*x[0]),int((self.screen_height/arenaHeight)*x[1])
 
 	def caption(self):
-	  pygame.display.set_caption('Multi-Agent Explorer')
-	  icon=pygame.image.load('Images/icon.png')
-	  pygame.display.set_icon(icon)
+		pygame.display.set_caption('Multi-Agent Explorer')
+		icon=pygame.image.load('Images/icon.png')
+		pygame.display.set_icon(icon)
 
 	def background(self):
-	  background=pygame.image.load('Images/terrain.jpeg')
-	  background=pygame.transform.scale(background, (1400, 1000))
-	  return background
+		background=pygame.image.load('Images/terrain.jpeg')
+		background=pygame.transform.scale(background, (1400, 1000))
+		return background
 
 	def drone_icon(self,n):
-	  drone_icon=pygame.image.load('Images/drone.ico')
-	  drone_icon=pygame.transform.scale(drone_icon, (20, 20))
-	  num_of_drones=n
-	  drone_list=[]
-	  for i in range(0,num_of_drones):
-	      drone_list.append(pygame.image.load('Images/drone.ico'))
-	  return drone_list
+		drone_icon=pygame.image.load('Images/drone.ico')
+		drone_icon=pygame.transform.scale(drone_icon, (20, 20))
+		num_of_drones=n
+		drone_list=[]
+		for i in range(0,num_of_drones):
+			drone_list.append(pygame.image.load('Images/drone.ico'))
+		return drone_list
 
 	def rover_icon(self):
-	  robot_icon=pygame.image.load('Images/rover2.ico')
-	  return robot_icon
+		robot_icon=pygame.image.load('Images/rover2.ico')
+		return robot_icon
 
 	def drone_blit(self,drone_surface,x,y):
-	  self.screen.blit(drone_surface,(x,y))
+		self.screen.blit(drone_surface,(x,y))
 
 	def rover_blit(self,x,y):
-	  self.screen.blit(self.rover_surface,(x,y))
+		self.screen.blit(self.rover_surface,(x,y))
 
 	def resources_blit(self,pt):
-	  pygame.draw.circle(self.screen, AQUA, self.m_to_pix(pt), 5, 5) 
+		pygame.draw.circle(self.screen, AQUA, self.m_to_pix(pt), 5, 5) 
+
+	def path_blit(self,path):
+		for i in path:
+			#self.m_to_pix(i)
+			pygame.draw.circle(self.alpha_surface, GREEN_ALPHA, self.m_to_pix(i), 5, 5) 		
+
+	def mob_path_blit(self,path):
+		for i in path:
+			#self.m_to_pix(i)
+			pygame.draw.circle(self.alpha_surface, BLUE_ALPHA, self.m_to_pix(i), 5, 5) 		
 
 	def render(self,drones,mobilerobots):
 		running = True
@@ -80,7 +91,10 @@ class Render:
 
 		#INIT
 		self.screen.fill(BLACK)
+		
+
 		self.screen.blit(self.backg,(0,0))
+		self.screen.blit(self.alpha_surface,(0,0))
 
 		#RESOURCES
 		for pt in self.collectionPts:
@@ -97,11 +111,14 @@ class Render:
 
 		#ROVER
 		self.rover_blit(x_mob,y_mob)
-		# self.rover_blit(self.m_to_pix((self.mobilerobots[0].getState()[0][0],self.mobilerobots[0].getState()[0][1])))
+		self.mob_path_blit(self.mobilerobots[0].getState()[2])
 
 		#DRONE
 		for i in range(0,len(drones)):
-		  self.drone_blit(drone_surface[i],self.m_to_pix(self.drones[i].getState()[0])[0],self.m_to_pix(self.drones[i].getState()[0])[1])
+			self.drone_blit(drone_surface[i],self.m_to_pix(self.drones[i].getState()[0])[0],self.m_to_pix(self.drones[i].getState()[0])[1])
+			#print(f'drone{i}: {self.drones[i].getState()[2]}')
+
+			self.path_blit(self.drones[i].getState()[2])
 
 		#UPDATE
 		pygame.display.update()
@@ -111,12 +128,3 @@ class Render:
 			if event.type==pygame.QUIT:
 				return True
 		return False
-
-	# if player_x<0:
-	# 	player_x=0
-	# elif player_x>=(screen_width-spaceship_icon.get_size()[0]):
-	# 	player_x=(screen_width-spaceship_icon.get_size()[0])
-	# if player_y<0:
-	# 	player_y=0
-	# elif player_y>=(screen_height-spaceship_icon.get_size()[1]):
-	# 	player_y=(screen_height-spaceship_icon.get_size()[1])

@@ -30,8 +30,10 @@ class MobileRobot:
     
     def updateTour(self):
         if len(self.tourTaken) > 0:
-            if not self.tourTaken[-1] == self.curPos:
+            if not (self.tourTaken[-1] == self.curPos).all():
               self.tourTaken.append(self.curPos)
+        else:
+            self.tourTaken.append(self.curPos)
               
     def getState(self):
         return self.curPos, self.curVel, self.tourTaken
