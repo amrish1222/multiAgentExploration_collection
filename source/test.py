@@ -31,7 +31,7 @@ while True:
     mrPos, mrVel = env.stepMobileRobs(mrActions)
     dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     env.render()
-    print(dronePos[0], droneCharge)
+    print(mrPos[0], dronePos[0], droneCharge)
     
     if env.checkClose() or done:
         break
