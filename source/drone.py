@@ -20,10 +20,10 @@ class Drone:
         self.parentPos = [0,0] # parent mobile robot position
         self.dockingThreshold = 0.1 # docking range from center of drone
         self.chargeTimeFactor = 2 # charge = time * chargeTimeFactor
+        self.instantCharge = True
         self.maxVelocity = maxDroneVelocity # m/s
         
     def setParams(self, vel, dock):
-        print("drone set params")
         self.curVel = vel * self.maxVelocity
         distFromParent = np.linalg.norm(self.curPos - self.parentPos)
         if dock:
@@ -50,6 +50,12 @@ class Drone:
         self.currentCharge -= timeStep
         if self.currentCharge >= self.maxCharge and self.isDocked:
             self.isDocked = False
+        if self.isDocked:
+            if self.instantCharge:
+                self.currentCharge = self.maxCharge
+            else:
+                self.currentCharge += timeStep * self.chargeTimeFactor
+            
     
     def updateTour(self):
         if len(self.tourTaken) > 0:
@@ -57,7 +63,10 @@ class Drone:
               self.tourTaken.append(self.curPos)  
     
     def getState(self):
-        time2release = self.maxCharge - self.currentCharge * self.chargeTimeFactor
-        return self.curPos, self.curVel, self.tourTaken, self.isDocked, time2release
+        if self.isDocked:
+            time2release = max(0,self.maxCharge - self.currentCharge * self.chargeTimeFactor)
+        else:
+            time2release = 0
+        return self.curPos, self.curVel, self.tourTaken, self.currentCharge, self.isDocked, time2release
         
         

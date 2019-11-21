@@ -14,6 +14,7 @@ import time
 from mobileAgent import mobileRandomAgent
 
 env = Env(2, 1)
+
 mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
 
@@ -27,12 +28,13 @@ while True:
 	for i in range(1):
 		mrActions.append(mAgent.getAction())
 
-	print("droneActions:", droneActions)
-	print("mrActions:", mrActions)
-	env.stepMobileRobs(mrActions)
-	env.stepDrones(droneActions, docks)
-	env.render()
-	#time.sleep(0.1)
+#	print("droneActions:", droneActions)
+#	print("mrActions:", mrActions)
+    mrPos, mrVel = env.stepMobileRobs(mrActions)
+    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
+    env.render()
+    print(dronePos[0], droneCharge)
+#    time.sleep(0.5)
 
-	if env.checkClose():
-		break
+    if env.checkClose() or done:
+        break
