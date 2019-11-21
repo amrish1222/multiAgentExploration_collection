@@ -11,6 +11,7 @@ import random
 from constants import *
 from drone import Drone
 from mobile_robot import MobileRobot
+np.set_printoptions(precision=3, suppress=True)
 
 class Render:
 	def __init__(self,numDrones,numMobileRobots,drone,mobile_robot,coll_pts):

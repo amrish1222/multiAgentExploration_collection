@@ -7,7 +7,7 @@
 
 import numpy as np
 from constants import *
-
+np.set_printoptions(precision=3, suppress=True)
 class Drone:
     def __init__(self):
         self.curPos = np.array([10,10])

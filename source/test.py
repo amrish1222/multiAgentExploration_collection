@@ -12,6 +12,7 @@ import numpy as np
 import pygame
 import time 
 from mobileAgent import mobileRandomAgent
+np.set_printoptions(precision=3, suppress=True)
 
 env = Env(2, 1)
 

@@ -7,6 +7,7 @@ Created on Wed Nov 20 17:16:45 2019
 """
 
 import numpy as np
+np.set_printoptions(precision=3, suppress=True)
 
 class mobileRandomAgent:
     def __init__(self):

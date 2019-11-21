@@ -12,7 +12,7 @@ import numpy as np
 import pygame
 import random
 from constants import *
-
+np.set_printoptions(precision=3, suppress=True)
 class Env:
     def __init__(self, numDrones, numMobileRobs):
         self.drones = self.initDrones(numDrones)
