@@ -10,7 +10,7 @@ from constants import *
 np.set_printoptions(precision=3, suppress=True)
 class MobileRobot:
     def __init__(self):
-        self.curPos = np.array([10,10])
+        self.curPos = np.array([arenaWidth/2,arenaHeight/2])
         self. curVel = np.array([0,0])
         self.size = 2 # mobile robot square side
         self.tourTaken = [] # list of positions that the MR has taken

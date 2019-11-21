@@ -29,6 +29,9 @@ class Env:
         #MAIN LOOP
         self.display=Render(len(self.drones),len(self.mobilerobots),self.drones,self.mobilerobots,self.collectionPts)
       
+        # Area coverage
+#        self.totalArea = np.array((,))
+        
     def initDrones(self, n):
         drones = []
         for i in range(0,n):
