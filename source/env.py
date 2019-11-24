@@ -41,9 +41,18 @@ class Env:
                             self.collectionPts)
         
     def initTotalArea(self):
+        # beyond = 0
+        # unexplored = 50
+        # explored = 255
+        # drone pos = 100
         tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
         tarea[G_PADDING:G_RANGE_X-G_PADDING ,
               G_PADDING:G_RANGE_Y-G_PADDING] = 50
+        states = self.drones[0].getState()
+        x,y = states[0]
+        x = int(x//GRID_SZ)
+        y = int(y//GRID_SZ)
+        tarea[x+G_PADDING, y+G_PADDING] = 255
         return tarea
         
     def initDrones(self, n):
@@ -84,14 +93,32 @@ class Env:
                          [0]*len(self.mobilerobots),
                          [False]*len(self.drones))
         
+    def getActionSpace(self):
+        return [0,1,2,3,4]
+    
+    def getStateSpace(self):
+        localArea = self.getLocalArea(self.mobilerobots[0])
+        w, h = localArea.shape
+        # descritize area
+        stateSpaceSz = w * h
+        # drone Pos
+        stateSpaceSz += 2
+        # Vel Rover
+        stateSpaceSz += 2
+        # rover pos
+        stateSpaceSz += 2
+        # charge
+        stateSpaceSz += 1
+        return stateSpaceSz, w, h, 2, 2, 2, 1
+    
     def stepDrones(self, actions, docks):
         # have to decide on the action space
         # waypoints or velocity
         posOut = []
-        curChargeOut = []
+        curChargeDistOut = []
         velOut = []
         isDockOut = []
-        done = False
+        done = []
         for drone, action, dock in zip(self.drones, actions, docks):
             vel = np.array([0,0])
             if action == 0:
@@ -109,10 +136,10 @@ class Env:
             curState = drone.getState()
             posOut.append(curState[0])
             velOut.append(curState[1])
-            curChargeOut.append(curState[3])
+            curChargeDistOut.append(curState[3])
             isDockOut.append(curState[4])
-            done = done or (curState[3] <= 0)
-        return posOut, velOut, curChargeOut, isDockOut, done
+            done.append(curState[3] <= 0)
+        return posOut, velOut, curChargeDistOut, isDockOut, done
             
     def stepMobileRobs(self, actions):
         posOut = []
@@ -139,7 +166,8 @@ class Env:
     def step(self, mrActions, droneActions, docks):
         mrPos, mrVel = self.stepMobileRobs(mrActions)
         dronePos, droneVel, droneCharge, dock, done = self.stepDrones(droneActions, docks)
-        self.update()
+        reward = self.getReward()
+        self.updateArea()
         localArea = [self.getLocalArea(mr) for mr in self.mobilerobots]
         return self.m_to_grid(mrPos), \
                 mrVel, \
@@ -148,6 +176,7 @@ class Env:
                 droneVel, \
                 droneCharge, \
                 dock, \
+                reward, \
                 done
                 
     def checkClose(self):
@@ -164,7 +193,7 @@ class Env:
         return self.totalAreaWithDrone[x+G_PADDING-s : x+G_PADDING+s+1,
                                        y+G_PADDING-s : y+G_PADDING+s+1]
             
-    def update(self):
+    def updateArea(self):
         for drone in self.drones:
             x,y =drone.getState()[0]
             x = int(x//GRID_SZ)
@@ -173,5 +202,23 @@ class Env:
             self.totalAreaWithDrone = np.copy(self.totalArea)
             self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
         
+    def getReward(self):
+        reward = []
+        for drone in self.drones:
+            states = drone.getState()
+            x,y = states[0]
+            x = int(x//GRID_SZ)
+            y = int(y//GRID_SZ)
+            if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
+                reward.append(DRONE_NEW_AREA_REWARD)
+            elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
+                reward.append(DRONE_OLD_AREA_REWARD)
+            else:
+                reward.append(0)
+                
+            if states[3] <= 0:
+                reward[-1] += DRONE_DISCHARGED_REWARD
+        return reward
+                
 
 

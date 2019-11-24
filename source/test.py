@@ -25,32 +25,38 @@ dAgent = [mobileRandomAgent(), mobileRandomAgent()]
 
 win_close_f = False
 
+actionSpace = env.getActionSpace()
+stateSpace = env.getStateSpace()
+
 for episodes in range(NUM_EPISODES):
     env.reset()
-    print("a")
     while True:
         droneActions = []
         docks = []
         for i in range(2):
             droneActions.append(dAgent[i].getAction())
-    #        droneActions.append(1)
+#            droneActions.append(1)
             docks.append(False)
         mrActions = []
         for i in range(1):
             mrActions.append(mAgent.getAction())
-    #        mrActions.append(2)
+#            mrActions.append(2)
         
     #    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     #    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
-        mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done = env.step(mrActions, droneActions, docks)
+        mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done = env.step(mrActions, droneActions, docks)
+        print(reward)
         env.render()
-    #    plt.imshow(localArea[0])
-    #    plt.pause(0.001)
+        
+        # check if any unexploredArea in local Area for static MobileRobot test
+        if not np.any(localArea[0] == 50):
+            break
+    
         if env.checkClose():
             win_close_f = True
             break
         
-        if done:
+        if any(done):
             break
     if win_close_f:
         break
