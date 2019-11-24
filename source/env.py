@@ -128,7 +128,7 @@ class Env:
 
 
     def render(self):
-        self.display.render(self.drones,self.mobilerobots)
+        self.display.render(self.drones,self.mobilerobots, self.totalAreaWithDrone)
         
     def getTotalArea(self):
         tarea = np.zeros((G_RANGE_X,G_RANGE_Y))

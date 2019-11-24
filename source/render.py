@@ -19,7 +19,8 @@ class Render:
         self.mobilerobots=mobile_robot
         self.collectionPts = coll_pts
         self.screen_width=screenWidth
-        self.screen_height, self.gridAreaWithDrone=screenHeight, gridAreaWithDrone
+        self.screen_height = screenHeight
+        self.gridAreaWithDrone = gridAreaWithDrone
         #INIT
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
@@ -30,6 +31,9 @@ class Render:
         #IMAGES
         self.drone_surface=self.drone_icon(numDrones)
         self.rover_surface=self.rover_icon()
+        
+        #FLAGS
+        self.showGrid_f = False
 
     def m_to_pix(self,x):
         return int((self.screen_width/arenaWidth)*x[0]),int((self.screen_height/arenaHeight)*x[1])
@@ -76,13 +80,22 @@ class Render:
 			#self.m_to_pix(i)
             pygame.draw.circle(self.alpha_surface, BLUE_ALPHA, self.m_to_pix(i), 5, 5) 		
     
-    def area_blit(self):
-        area_surf = pygame.surfarray.make_surface(self.gridAreaWithDrone[G_PADDING:-G_PADDING, G_PADDING:-G_PADDING])
+    def gray(self, im):
+        im = 255 * (im / im.max())
+        w, h = im.shape
+        ret = np.empty((w, h, 3), dtype=np.uint8)
+        ret[:, :, 2] = ret[:, :, 1] = ret[:, :, 0] = im
+        return ret
+    
+    def area_blit(self, areaWithDrone):
+        area_surf = self.gray(areaWithDrone[G_PADDING:-G_PADDING, G_PADDING:-G_PADDING])
+        area_surf = pygame.surfarray.make_surface(area_surf)
         area_surf = pygame.transform.scale(area_surf, (self.screen_width, self.screen_height))
         self.screen.blit(area_surf, (0,0))
 	
-    def render(self,drones,mobilerobots):
-        running = True
+    def render(self,drones,mobilerobots, areaWithDrone):
+        events = pygame.event.get()
+        
         drone_surface=self.drone_surface
         rover_surface=self.rover_surface
         
@@ -117,7 +130,16 @@ class Render:
             self.path_blit(self.drones[i].getState()[2])
 
         #UPDATE
-#        self.area_blit()
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    self.showGrid_f = True
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_d:
+                    self.showGrid_f = False
+        if self.showGrid_f:
+            self.area_blit(areaWithDrone)
+            
         pygame.display.update()
 	
     def check(self):
