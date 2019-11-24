@@ -80,6 +80,24 @@ class Env:
         self.totalAreaWithDrone = np.copy(self.totalArea)
         self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
         
+    def getActionSpace(self):
+        return [0,1,2,3,4]
+    
+    def getStateSpace(self):
+        localArea = self.getLocalArea(self.mobilerobots[0])
+        w, h = localArea.shape
+        # descritize area
+        stateSpaceSz = w * h
+        # drone Pos
+        stateSpaceSz += 2
+        # Vel Rover
+        stateSpaceSz += 2
+        # rover pos
+        stateSpaceSz += 2
+        # charge
+        stateSpaceSz += 1
+        return stateSpaceSz, w, h, 2, 2, 2, 1
+    
     def stepDrones(self, actions, docks):
         # have to decide on the action space
         # waypoints or velocity

@@ -24,7 +24,10 @@ mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
 
 win_close_f = False
-droneM = False
+
+actionSpace = env.getActionSpace()
+stateSpace = env.getStateSpace()
+
 for episodes in range(NUM_EPISODES):
     env.reset()
     while True:
