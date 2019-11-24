@@ -14,31 +14,43 @@ from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
 from mobileAgent import mobileRandomAgent
+from constants import *
+
 np.set_printoptions(precision=3, suppress=True)
 
-env = Env(1, 1)
+env = Env(2, 1)
 
 mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
 
-while True:
-    droneActions = []
-    docks = []
-    for i in range(2):
-#        droneActions.append(dAgent[i].getAction())
-        droneActions.append(1)
-        docks.append(False)
-    mrActions = []
-    for i in range(1):
-#        mrActions.append(mAgent.getAction())
-        mrActions.append(2)
-    
-#    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
-#    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
-    mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done = env.step(mrActions, droneActions, docks)
-    env.render()
-#    plt.imshow(localArea[0])
-#    plt.pause(0.001)
-    time.sleep(0.01)
-    if env.checkClose() or done:
+win_close_f = False
+
+for episodes in range(NUM_EPISODES):
+    env.reset()
+    print("a")
+    while True:
+        droneActions = []
+        docks = []
+        for i in range(2):
+            droneActions.append(dAgent[i].getAction())
+    #        droneActions.append(1)
+            docks.append(False)
+        mrActions = []
+        for i in range(1):
+            mrActions.append(mAgent.getAction())
+    #        mrActions.append(2)
+        
+    #    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
+    #    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
+        mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done = env.step(mrActions, droneActions, docks)
+        env.render()
+    #    plt.imshow(localArea[0])
+    #    plt.pause(0.001)
+        if env.checkClose():
+            win_close_f = True
+            break
+        
+        if done:
+            break
+    if win_close_f:
         break
