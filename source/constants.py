@@ -5,7 +5,7 @@
 # Copyright
 # Constants
 
-NUM_EPISODES = 10
+NUM_EPISODES = 100
 
 screenHeight = 1000
 screenWidth = 1000
@@ -19,7 +19,7 @@ BLACK=(0,0,0)
 AQUA=(0,255,255)
 GREEN_ALPHA=(0,255,0,100)
 BLUE_ALPHA=(0,0,255,100)
-timeStep=0.1
+timeStep=1
 
 maxMobileRobVelocity=0.25
 
@@ -29,6 +29,9 @@ maxMobileRobVelocity=0.25
 maxDroneVelocity= 0.5
 dockingThreshold = maxDroneVelocity * timeStep * 2
 MAX_CHARGE = 25
+DRONE_NEW_AREA_REWARD = 1
+DRONE_OLD_AREA_REWARD = 0
+DRONE_DISCHARGED_REWARD = -100
 
 ## Area
 GRID_SZ = maxDroneVelocity * timeStep * 1.2
