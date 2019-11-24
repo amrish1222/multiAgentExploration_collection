@@ -74,6 +74,7 @@ class Drone:
             time2release = max(0,self.maxCharge - self.currentCharge * self.chargeTimeFactor)
         else:
             time2release = 0
-        return self.curPos, self.curVel, self.tourTaken, round(self.currentCharge, 3), self.isDocked, time2release
+        currChargeDist = self.currentCharge * self.maxVelocity
+        return self.curPos, self.curVel, self.tourTaken, round(currChargeDist, 3), self.isDocked, time2release
         
         
