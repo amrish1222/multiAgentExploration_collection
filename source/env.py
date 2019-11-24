@@ -44,6 +44,11 @@ class Env:
         tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
         tarea[G_PADDING:G_RANGE_X-G_PADDING ,
               G_PADDING:G_RANGE_Y-G_PADDING] = 50
+        states = self.drones[0].getState()
+        x,y = states[0]
+        x = int(x//GRID_SZ)
+        y = int(y//GRID_SZ)
+        tarea[x+G_PADDING, y+G_PADDING] = 255
         return tarea
         
     def initDrones(self, n):
