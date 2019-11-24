@@ -30,16 +30,21 @@ class Env:
         self.screen_height=screenHeight
       
         # Area coverage
-        self.totalArea = self.getTotalArea()
-        self.totalAreaWithDrone = copy.deepcopy(self.totalArea)
+        self.totalArea = self.initTotalArea()
+        self.totalAreaWithDrone = np.copy(self.totalArea)
         
         #MAIN LOOP
         self.display=Render(len(self.drones),
                             len(self.mobilerobots),
                             self.drones,
                             self.mobilerobots,
-                            self.collectionPts,
-                            self.totalAreaWithDrone)
+                            self.collectionPts)
+        
+    def initTotalArea(self):
+        tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
+        tarea[G_PADDING:G_RANGE_X-G_PADDING ,
+              G_PADDING:G_RANGE_Y-G_PADDING] = 50
+        return tarea
         
     def initDrones(self, n):
         drones = []
@@ -62,6 +67,14 @@ class Env:
           resource_list.append((random.randint(1, arenaWidth-1),random.randint(1, arenaHeight-1)))
         return resource_list
       
+    def reset(self):
+        self.drones = self.initDrones(len(self.drones))
+        self.mobilerobots = self.initMobileRobs(len(self.mobilerobots))
+        self.collectionPts = self.genCollectionPts(self.numCollectionPts)
+        self.totalArea = self.initTotalArea()
+        self.totalAreaWithDrone = np.copy(self.totalArea)
+        self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
+        
     def stepDrones(self, actions, docks):
         # have to decide on the action space
         # waypoints or velocity
@@ -92,7 +105,6 @@ class Env:
             done = done or (curState[3] <= 0)
         return posOut, velOut, curChargeOut, isDockOut, done
             
-
     def stepMobileRobs(self, actions):
         posOut = []
         velOut = []
@@ -122,27 +134,19 @@ class Env:
         localArea = [self.getLocalArea(mr) for mr in self.mobilerobots]
         return mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
                 
-
     def checkClose(self):
         return self.display.check()
 
-
     def render(self):
         self.display.render(self.drones,self.mobilerobots, self.totalAreaWithDrone)
-        
-    def getTotalArea(self):
-        tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
-        tarea[G_PADDING:G_RANGE_X-G_PADDING ,
-              G_PADDING:G_RANGE_Y-G_PADDING] = 50
-        return tarea
     
     def getLocalArea(self,mr):
         x, y = mr.getState()[0]
         x = int(x//GRID_SZ)
         y = int(y//GRID_SZ)
         s = int((G_LOCAL-1)/2)
-        return self.totalAreaWithDrone[x+G_PADDING-s : x+G_PADDING+s ,
-                                       y+G_PADDING-s : y+G_PADDING+s]
+        return self.totalAreaWithDrone[x+G_PADDING-s : x+G_PADDING+s+1,
+                                       y+G_PADDING-s : y+G_PADDING+s+1]
             
     def update(self):
         for drone in self.drones:
@@ -150,7 +154,7 @@ class Env:
             x = int(x//GRID_SZ)
             y = int(y//GRID_SZ)
             self.totalArea[x+G_PADDING, y+G_PADDING] = 255
-            self.totalAreaWithDrone = copy.deepcopy(self.totalArea)
+            self.totalAreaWithDrone = np.copy(self.totalArea)
             self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
         
 

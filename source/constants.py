@@ -5,6 +5,8 @@
 # Copyright
 # Constants
 
+NUM_EPISODES = 10
+
 screenHeight = 1000
 screenWidth = 1000
 arenaWidth = 50

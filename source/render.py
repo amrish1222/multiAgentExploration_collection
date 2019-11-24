@@ -14,13 +14,13 @@ from mobile_robot import MobileRobot
 np.set_printoptions(precision=3, suppress=True)
 
 class Render:
-    def __init__(self,numDrones,numMobileRobots,drone,mobile_robot,coll_pts,gridAreaWithDrone):
+    def __init__(self,numDrones,numMobileRobots,drone,mobile_robot,coll_pts):
         self.drones=drone
         self.mobilerobots=mobile_robot
         self.collectionPts = coll_pts
         self.screen_width=screenWidth
         self.screen_height = screenHeight
-        self.gridAreaWithDrone = gridAreaWithDrone
+        
         #INIT
         pygame.init()
         self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
@@ -34,7 +34,14 @@ class Render:
         
         #FLAGS
         self.showGrid_f = False
-
+    
+    def reset(self, drone,mobile_robot,coll_pts):
+        self.drones=drone
+        self.mobilerobots=mobile_robot
+        self.collectionPts = coll_pts
+        self.alpha_surface=pygame.Surface((self.screen_width,self.screen_height), pygame.SRCALPHA)
+        self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
+        
     def m_to_pix(self,x):
         return int((self.screen_width/arenaWidth)*x[0]),int((self.screen_height/arenaHeight)*x[1])
 
@@ -95,51 +102,49 @@ class Render:
 	
     def render(self,drones,mobilerobots, areaWithDrone):
         events = pygame.event.get()
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.showGrid_f = True
+        if keys[pygame.K_RIGHT]:
+            self.showGrid_f = False
         
-        drone_surface=self.drone_surface
-        rover_surface=self.rover_surface
-        
-        #INIT
-        self.screen.fill(BLACK)
-        		
-        
-        self.screen.blit(self.backg,(0,0))
-        self.screen.blit(self.alpha_surface,(0,0))
-        
-        #RESOURCES
-        for pt in self.collectionPts:
-            self.resources_blit(pt)
-
-        x_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[0]
-        y_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[1]
-        
-        # if x_mob<0:
-        # 	x_mob=0
-        # elif x_mob>0:
-        # 	x_mob=self.screen_width-self.rover_surface.get_size()[0]
-        
-        #ROVER
-        self.rover_blit(x_mob,y_mob)
-        self.mob_path_blit(self.mobilerobots[0].getState()[2])
-        
-        #DRONE
-        for i in range(0,len(drones)):
-            self.drone_blit(drone_surface[i],self.m_to_pix(self.drones[i].getState()[0])[0],self.m_to_pix(self.drones[i].getState()[0])[1])
-            #print(f'drone{i}: {self.drones[i].getState()[2]}')
-            
-            self.path_blit(self.drones[i].getState()[2])
-
-        #UPDATE
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_d:
-                    self.showGrid_f = True
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_d:
-                    self.showGrid_f = False
         if self.showGrid_f:
             self.area_blit(areaWithDrone)
+        else:
+            drone_surface=self.drone_surface
+            rover_surface=self.rover_surface
             
+            #INIT
+            self.screen.fill(BLACK)
+            		
+            
+            self.screen.blit(self.backg,(0,0))
+            self.screen.blit(self.alpha_surface,(0,0))
+            
+            #RESOURCES
+            for pt in self.collectionPts:
+                self.resources_blit(pt)
+    
+            x_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[0]
+            y_mob=self.m_to_pix(self.mobilerobots[0].getState()[0])[1]
+            
+            # if x_mob<0:
+            # 	x_mob=0
+            # elif x_mob>0:
+            # 	x_mob=self.screen_width-self.rover_surface.get_size()[0]
+            
+            #ROVER
+            self.rover_blit(x_mob,y_mob)
+            self.mob_path_blit(self.mobilerobots[0].getState()[2])
+            
+            #DRONE
+            for i in range(0,len(drones)):
+                self.drone_blit(drone_surface[i],self.m_to_pix(self.drones[i].getState()[0])[0],self.m_to_pix(self.drones[i].getState()[0])[1])
+                #print(f'drone{i}: {self.drones[i].getState()[2]}')
+                
+                self.path_blit(self.drones[i].getState()[2])
+    
+        
         pygame.display.update()
 	
     def check(self):
