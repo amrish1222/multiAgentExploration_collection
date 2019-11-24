@@ -31,21 +31,21 @@ class agentModel(nn.Module):
         x = self.l3(x)
         return x
         
-class SimpleNNagent_torch():
-    def __init__(self, env):
-        self.trainX = []
-        self.trainY = []
-        self.replayMemory = []
-        self.epsilon = 1.0
-        self.minEpsilon = 0.01
-        self.epsilonDecay = 0.997
-        self.discount = 0.95
-        self.learningRate = 0.002
-        self.batchSize = 128
-        self.sLow = env.observation_space.low
-        self.sHigh = env.observation_space.high
-        self.nActions = env.action_space.n
-        self.buildModel(env.observation_space.shape[0], env.action_space.n)
+class SimpleNNagent():
+    def __init__(self):
+#        self.trainX = []
+#        self.trainY = []
+#        self.replayMemory = []
+#        self.epsilon = 1.0
+#        self.minEpsilon = 0.01
+#        self.epsilonDecay = 0.997
+#        self.discount = 0.95
+#        self.learningRate = 0.002
+#        self.batchSize = 128
+#        self.sLow = env.observation_space.low
+#        self.sHigh = env.observation_space.high
+#        self.nActions = env.action_space.n
+#        self.buildModel(env.observation_space.shape[0], env.action_space.n)
         self.sw = SummaryWriter(log_dir=f"tf_log/demo_{random.randint(0, 1000)}")
         
     def nState(self, state):
@@ -90,7 +90,7 @@ class SimpleNNagent_torch():
     def newGame(self):
         self.trainX = []
         self.trainY = []
-#        self.replayMemory = []
+        print("new game")
     
     def getTrainAction(self,state):
         action = self.EpsilonGreedyPolicy(state)
@@ -175,31 +175,3 @@ class SimpleNNagent_torch():
     
     def summaryWriter_close(self):
         self.sw.close()
-    
-    def getReward(self, currState, nextState, action, reward, maxDist, step, done):      
-        
-        # Reward 11
-        if nextState[1] > currState[1] and nextState[1]>0 and currState[1]>0:
-            reward += 15
-        elif nextState[1] < currState[1] and nextState[1]<=0 and currState[1]<=0:
-            reward +=15
-        if done:
-            reward = reward + 1000
-        else:
-            reward=reward-10
-        
-# =============================================================================
-#         # Reward 15
-#         if nextState[1] > currState[1] and nextState[1]>0 and currState[1]>0:
-#             reward += 15
-#         elif nextState[1] < currState[1] and nextState[1]<=0 and currState[1]<=0:
-#             reward +=15
-#         if done:
-#             reward = reward + 1000
-#         else:
-#             reward=reward-10
-#         if nextState[0]>= 0.5:
-#             reward += 1000
-#             
-# =============================================================================
-        return reward
