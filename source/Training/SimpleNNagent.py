@@ -18,7 +18,66 @@ import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
 
-class agentModel(nn.Module):
+
+class agentModelCNN1(nn.Module):
+    def __init__(self,env):
+        super().__init__()
+        self.stateSpaceSz, \
+        self.w, \
+        self.h, \
+        self.drPos, \
+        self.mrVel, \
+        self.mrPos, \
+        self.dCharge = env.getStateSpace()
+        
+        # cnn
+        self.cnn1 = nn.Conv2d(in_channels = 1, out_channels = 5, kernel_size = 5)
+        self.mp1 = nn.MaxPool2d(2)
+        self.cnn2 = nn.conv2d(in_channels = 5, out_channels = 16, kernel_size = 1)
+        
+        # fc
+        self.fcInputs = self.mrPos + self.mrVel + self.drPos + self.dCharge
+        self.l1 = nn.Linear(in_features = self.fcInputs, out_features = self.fcInputs)
+        
+        # concat
+        self.fc1 = nn.Linear(in_features = 16+self.fcInputs, out_features = 16+self.fcInputs)
+        self.fc2 = nn.Linear(in_features = 16+self.fcInputs, out_features = len(env.getActionSpace()))
+    
+    def forward(self, x):
+        # todo how to handle batch training / batch inputs
+        x1,x2 = x
+        
+        #cnn
+        x1 = F.relu(self.mp1(self.cnn1(x1)))
+        x1 = F.relu(self.cnn2(x1))
+    
+        #fc
+        x2 = F.relu(self.l1(x2))
+        
+        #concat
+        x = torch.cat((x1,x2), dim = 1)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        return x
+
+    def stitch(self,state):
+        n_mrPos, \
+        n_mrVel, \
+        n_localArea, \
+        n_dronePos, \
+        n_droneVel, \
+        n_droneCharge, \
+        n_dock, \
+        n_reward, \
+        n_done = state
+        d1 = np.hstack((n_mrPos.reshape(-1),
+                         n_mrVel.reshape(-1),
+                         n_dronePos.reshape(-1),
+                         np.asarray(n_droneCharge).reshape(-1)))
+        d2 = n_localArea.reshape(-1)
+        return (d1, d2)
+    
+class agentModelFC(nn.Module):
     def __init__(self,env):
         super().__init__()
         self.stateSpaceSz, \
@@ -78,7 +137,7 @@ class SimpleNNagent():
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print(f'Device : {self.device}')
-        self.model = agentModel(env).to(self.device)
+        self.model = agentModelFC(env).to(self.device)
         self.loss_fn = nn.MSELoss()
 #        self.optimizer = optim.SGD(self.model.parameters(), lr=self.learningRate)
         self.optimizer = optim.Adam(self.model.parameters(), lr = self.learningRate)
