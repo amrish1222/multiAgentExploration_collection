@@ -74,7 +74,7 @@ class Env:
         x,y = pt
         x = int(x//GRID_SZ)
         y = int(y//GRID_SZ)
-        return x, y
+        return np.asarray([x, y])
 
     def genCollectionPts(self,n):
         resource_list=[]
@@ -89,8 +89,8 @@ class Env:
         self.totalArea = self.initTotalArea()
         self.totalAreaWithDrone = np.copy(self.totalArea)
         self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
-        return self.step([0]*len(self.drones),
-                         [0]*len(self.mobilerobots),
+        return self.step([0]*len(self.mobilerobots),
+                         [0]*len(self.drones),
                          [False]*len(self.drones))
         
     def getActionSpace(self):
@@ -169,10 +169,10 @@ class Env:
         reward = self.getReward()
         self.updateArea()
         localArea = [self.getLocalArea(mr) for mr in self.mobilerobots]
-        return self.m_to_grid(mrPos), \
+        return [self.m_to_grid(i) for i in mrPos], \
                 mrVel, \
                 localArea, \
-                self.m_to_grid(dronePos), \
+                [self.m_to_grid(i) for i in dronePos], \
                 droneVel, \
                 droneCharge, \
                 dock, \
