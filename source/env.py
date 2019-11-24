@@ -41,6 +41,10 @@ class Env:
                             self.collectionPts)
         
     def initTotalArea(self):
+        # beyond = 0
+        # unexplored = 50
+        # explored = 255
+        # drone pos = 100
         tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
         tarea[G_PADDING:G_RANGE_X-G_PADDING ,
               G_PADDING:G_RANGE_Y-G_PADDING] = 50
