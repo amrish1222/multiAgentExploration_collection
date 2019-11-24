@@ -29,11 +29,12 @@ dockingThreshold = maxDroneVelocity * timeStep * 2
 MAX_CHARGE = 25
 
 ## Area
-GRID_SZ = maxDroneVelocity * timeStep
+GRID_SZ = maxMobileRobVelocity * timeStep
 G_MAIN = arenaWidth//GRID_SZ
 LOCAL_ENV_SZ = maxDroneVelocity * MAX_CHARGE * 2
+G_LOCAL = LOCAL_ENV_SZ//GRID_SZ
 PADDING = LOCAL_ENV_SZ/2
 G_PADDING = PADDING//GRID_SZ
 
-RANGE_X_GRID = G_MAIN + 2* G_PADDING
-RANGE_Y_GRID = G_MAIN + 2* G_PADDING
+G_RANGE_X = G_MAIN + 2* G_PADDING
+G_RANGE_Y = G_MAIN + 2* G_PADDING
