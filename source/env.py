@@ -69,6 +69,12 @@ class Env:
     
     def m_to_pix(self,x):
         return (self.screen_width/arenaWidth)*x[0],(self.screen_height/arenaHeight)*x[1]
+    
+    def m_to_grid(self,pt):
+        x,y = pt
+        x = int(x//GRID_SZ)
+        y = int(y//GRID_SZ)
+        return x, y
 
     def genCollectionPts(self,n):
         resource_list=[]
@@ -83,6 +89,9 @@ class Env:
         self.totalArea = self.initTotalArea()
         self.totalAreaWithDrone = np.copy(self.totalArea)
         self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
+        return self.step([0]*len(self.drones),
+                         [0]*len(self.mobilerobots),
+                         [False]*len(self.drones))
         
     def getActionSpace(self):
         return [0,1,2,3,4]
@@ -160,7 +169,15 @@ class Env:
         reward = self.getReward()
         self.updateArea()
         localArea = [self.getLocalArea(mr) for mr in self.mobilerobots]
-        return mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done
+        return self.m_to_grid(mrPos), \
+                mrVel, \
+                localArea, \
+                self.m_to_grid(dronePos), \
+                droneVel, \
+                droneCharge, \
+                dock, \
+                reward, \
+                done
                 
     def checkClose(self):
         return self.display.check()
