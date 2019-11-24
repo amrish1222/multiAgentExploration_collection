@@ -30,7 +30,7 @@ class Env:
         self.display=Render(len(self.drones),len(self.mobilerobots),self.drones,self.mobilerobots,self.collectionPts)
       
         # Area coverage
-#        self.totalArea = np.array((,))
+        self.totalArea = self.getTotalArea(G_RANGE_X,G_RANGE_Y, G_PADDING, G_PADDING)
         
     def initDrones(self, n):
         drones = []
@@ -112,6 +112,10 @@ class Env:
 
     def render(self):
         self.display.render(self.drones,self.mobilerobots)
+        
+    def getTotalArea(self, Rx, Ry, Px, Py):
+        tarea = np.array((Rx,Ry))
+        return tarea
             
 
 
