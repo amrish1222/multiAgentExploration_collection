@@ -47,8 +47,11 @@ for episodes in range(NUM_EPISODES):
         mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done = env.step(mrActions, droneActions, docks)
         print(reward)
         env.render()
-    #    plt.imshow(localArea[0])
-    #    plt.pause(0.001)
+        
+        # check if any unexploredArea in local Area for static MobileRobot test
+        if not np.any(localArea[0] == 50):
+            break
+    
         if env.checkClose():
             win_close_f = True
             break
