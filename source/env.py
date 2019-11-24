@@ -5,13 +5,16 @@
 # Copyright
 # brief Environment class for the simulation
 
-from drone import Drone
-from mobile_robot import MobileRobot
-from render import Render
 import numpy as np
 import pygame
 import random
+import copy
+
 from constants import *
+from drone import Drone
+from mobile_robot import MobileRobot
+from render import Render
+
 np.set_printoptions(precision=3, suppress=True)
 class Env:
     def __init__(self, numDrones, numMobileRobs):
@@ -26,11 +29,17 @@ class Env:
         self.screen_width=screenWidth
         self.screen_height=screenHeight
       
-        #MAIN LOOP
-        self.display=Render(len(self.drones),len(self.mobilerobots),self.drones,self.mobilerobots,self.collectionPts)
-      
         # Area coverage
-        self.totalArea = self.getTotalArea(G_RANGE_X,G_RANGE_Y, G_PADDING, G_PADDING)
+        self.totalArea = self.getTotalArea()
+        self.totalAreaWithDrone = copy.deepcopy(self.totalArea)
+        
+        #MAIN LOOP
+        self.display=Render(len(self.drones),
+                            len(self.mobilerobots),
+                            self.drones,
+                            self.mobilerobots,
+                            self.collectionPts,
+                            self.totalAreaWithDrone)
         
     def initDrones(self, n):
         drones = []
@@ -105,6 +114,14 @@ class Env:
             posOut.append(curState[0])
             velOut.append(curState[1])
         return posOut, velOut
+    
+    def step(self, mrActions, droneActions, docks):
+        mrPos, mrVel = self.stepMobileRobs(mrActions)
+        dronePos, droneVel, droneCharge, dock, done = self.stepDrones(droneActions, docks)
+        self.update()
+        localArea = [self.getLocalArea(mr) for mr in self.mobilerobots]
+        return mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
+                
 
     def checkClose(self):
         return self.display.check()
@@ -113,9 +130,28 @@ class Env:
     def render(self):
         self.display.render(self.drones,self.mobilerobots)
         
-    def getTotalArea(self, Rx, Ry, Px, Py):
-        tarea = np.array((Rx,Ry))
+    def getTotalArea(self):
+        tarea = np.zeros((G_RANGE_X,G_RANGE_Y))
+        tarea[G_PADDING:G_RANGE_X-G_PADDING ,
+              G_PADDING:G_RANGE_Y-G_PADDING] = 50
         return tarea
+    
+    def getLocalArea(self,mr):
+        x, y = mr.getState()[0]
+        x = int(x//GRID_SZ)
+        y = int(y//GRID_SZ)
+        s = int((G_LOCAL-1)/2)
+        return self.totalAreaWithDrone[x+G_PADDING-s : x+G_PADDING+s ,
+                                       y+G_PADDING-s : y+G_PADDING+s]
             
+    def update(self):
+        for drone in self.drones:
+            x,y =drone.getState()[0]
+            x = int(x//GRID_SZ)
+            y = int(y//GRID_SZ)
+            self.totalArea[x+G_PADDING, y+G_PADDING] = 255
+            self.totalAreaWithDrone = copy.deepcopy(self.totalArea)
+            self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
+        
 
 

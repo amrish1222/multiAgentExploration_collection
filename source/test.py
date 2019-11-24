@@ -5,16 +5,18 @@
 # Copyright
 # Main Run file
 
-from drone import Drone
-from mobile_robot import MobileRobot
-from env import Env
 import numpy as np
 import pygame
 import time 
+import matplotlib.pyplot as plt
+
+from env import Env
+from drone import Drone
+from mobile_robot import MobileRobot
 from mobileAgent import mobileRandomAgent
 np.set_printoptions(precision=3, suppress=True)
 
-env = Env(2, 1)
+env = Env(1, 1)
 
 mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
@@ -28,10 +30,12 @@ while True:
         docks.append(False)
     mrActions = []
     for i in range(1):
-        mrActions.append(mAgent.getAction())
+#        mrActions.append(mAgent.getAction())
+        mrActions.append(0)
     
-    mrPos, mrVel = env.stepMobileRobs(mrActions)
-    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
+#    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
+#    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
+    mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done = env.step(mrActions, droneActions, docks)
     env.render()
     
     if env.checkClose() or done:
