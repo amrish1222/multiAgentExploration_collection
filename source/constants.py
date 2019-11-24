@@ -30,7 +30,7 @@ maxDroneVelocity= 0.5
 dockingThreshold = maxDroneVelocity * timeStep * 2
 MAX_CHARGE = 25
 DRONE_NEW_AREA_REWARD = 1
-DRONE_OLD_AREA_REWARD = 0
+DRONE_OLD_AREA_REWARD = -1
 DRONE_DISCHARGED_REWARD = -100
 
 ## Area
