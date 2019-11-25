@@ -29,11 +29,16 @@ class agentModel(nn.Module):
         self.mrPos, \
         self.dCharge = env.getStateSpace()
         
-        self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/2))
-        self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/2), out_features = int(self.stateSpaceSz/8))
-        self.l3 = nn.Linear(in_features = int(self.stateSpaceSz/8), out_features = 64)
-        self.l4 = nn.Linear(in_features = 64, out_features = len(env.getActionSpace()))
-    
+# =============================================================================
+#         self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/2))
+#         self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/2), out_features = int(self.stateSpaceSz/8))
+#         self.l3 = nn.Linear(in_features = int(self.stateSpaceSz/8), out_features = 64)
+#         self.l4 = nn.Linear(in_features = 64, out_features = len(env.getActionSpace()))
+# =============================================================================
+        self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/16))
+        self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/16), out_features = 8)
+        self.l3 = nn.Linear(in_features = 8, out_features = len(env.getActionSpace()))
+        
     def stitch(self,state):
         n_mrPos, \
         n_mrVel, \
@@ -52,10 +57,16 @@ class agentModel(nn.Module):
                           np.asarray(n_droneCharge).reshape(-1)))
     
     def forward(self, x):
+# =============================================================================
+#         x = F.relu(self.l1(x))
+#         x = F.relu(self.l2(x))
+#         x = F.relu(self.l3(x))
+#         x = self.l4(x)
+# =============================================================================
+        
         x = F.relu(self.l1(x))
         x = F.relu(self.l2(x))
-        x = F.relu(self.l3(x))
-        x = self.l4(x)
+        x = self.l3(x)
         return x
         
 class SimpleNNagent():
@@ -66,7 +77,7 @@ class SimpleNNagent():
         self.maxReplayMemory = 5000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
-        self.epsilonDecay = 0.997
+        self.epsilonDecay = 0.99997
         self.discount = 0.95
         self.learningRate = 0.002
         self.batchSize = 128
@@ -112,7 +123,7 @@ class SimpleNNagent():
     def newGame(self):
         self.trainX = []
         self.trainY = []
-        print("new game")
+#        print("new game")
     
     def getTrainAction(self,state):
         action = self.EpsilonGreedyPolicy(state)

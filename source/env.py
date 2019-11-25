@@ -218,6 +218,18 @@ class Env:
                 
             if states[3] <= 0:
                 reward[-1] += DRONE_DISCHARGED_REWARD
+            
+            if DRONE_CURR_CHARGE_RWD:
+                reward[-1] += states[3]
+                
+            if EXCESS_RETURN_CHARGE_RWD:
+                reward[-1] += states[3] - states[-1]
+               
+            if DO_RETURN_POSSIBLE_RWD: 
+                if (states[3] - states[-1]*1.2) >= 0:
+                    reward[-1] +=  0
+                else:
+                    reward[-1] += RETURN_POSSIBLE_RWD
         return reward
                 
 

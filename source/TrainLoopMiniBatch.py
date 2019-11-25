@@ -25,7 +25,7 @@ env = Env(NUM_DR, NUM_MR)
 
 # Parameters
 NUM_EPISODES = 5000
-LEN_EPISODE = 200
+LEN_EPISODE = 1000
 reward_history = [] # remove
 loss_history = [] # remove
 
@@ -47,13 +47,16 @@ for episode in range(NUM_EPISODES):
     episode_reward = 0
     episode_loss = 0
     curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
-    print(f"episode : {episode}")
+    print(f"episode, epsilon : {episode, dAgent.epsilon}")
     
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 1 == 0 and dispFlag:
+        if episode % 25 == 0 and dispFlag or episode > 500:
             env.render()
+        
+        if step == LEN_EPISODE -1:
+            print("200 steps run")
         
         # Randomly sample an action from the action space
         # Should really be your exploration/exploitation policy
