@@ -18,7 +18,7 @@ from constants import *
 
 np.set_printoptions(precision=3, suppress=True)
 
-env = Env(2, 1)
+env = Env(1, 1)
 
 mAgent = mobileRandomAgent()
 dAgent = [mobileRandomAgent(), mobileRandomAgent()]
@@ -29,6 +29,7 @@ actionSpace = env.getActionSpace()
 stateSpace = env.getStateSpace()
 
 for episodes in range(NUM_EPISODES):
+    print("new episode")
     env.reset()
     while True:
         droneActions = []
@@ -45,7 +46,7 @@ for episodes in range(NUM_EPISODES):
     #    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     #    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
         mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done = env.step(mrActions, droneActions, docks)
-        print(dronePos, droneVel)
+        print(dronePos, mrPos, droneCharge)
         env.render()
         
         # check if any unexploredArea in local Area for static MobileRobot test
