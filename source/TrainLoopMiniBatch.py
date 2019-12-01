@@ -36,7 +36,26 @@ dispFlag = True
 dAgent = cNN.SimpleCNNagent(env)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
-#dAgent.summaryWriter_showNetwork(curr_state)
+c_mrPos, \
+c_mrVel, \
+c_localArea, \
+c_dronePos, \
+c_droneVel, \
+c_droneCharge, \
+c_dock, \
+c_reward, \
+c_done = curr_state
+for ndx in range(NUM_DR):
+    c_s = [c_mrPos[0],
+           c_mrVel[0],
+           c_localArea[0],
+           c_dronePos[ndx],
+           c_droneVel[ndx],
+           c_droneCharge[ndx],
+           c_dock[ndx],
+           c_reward[ndx],
+           c_done[ndx]]
+dAgent.summaryWriter_showNetwork(c_s)
     
 aDocks = []
 for i in range(NUM_DR):

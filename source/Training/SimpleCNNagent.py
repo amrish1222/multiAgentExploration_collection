@@ -45,8 +45,8 @@ class agentModelCNN1(nn.Module):
         self.fc1 = nn.Linear(in_features = (14*14)+self.fcInputs, out_features = 256)
         self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
     
-    def forward(self, x):
-        x1,x2 = x
+    def forward(self, x1, x2):
+#        x1,x2 = x
         
         #cnn
         x1 = F.relu(self.mp1(self.cnn1(x1)))
@@ -127,7 +127,7 @@ class SimpleCNNagent():
         Y = torch.from_numpy(self.trainY).to(self.device)
         for i in range(2): # number epoh
             self.optimizer.zero_grad()
-            predY = self.model(X)
+            predY = self.model(*X)
             loss = self.loss_fn(Y,predY)
             loss.backward()
             self.optimizer.step()
@@ -141,7 +141,7 @@ class SimpleCNNagent():
             #Handle multiple max
             self.model.eval()
             X = self.model.stitch_batch([self.model.stitch(state)])
-            self.qValues = self.model(X).cpu().detach().numpy()[0]
+            self.qValues = self.model(*X).cpu().detach().numpy()[0]
             action = np.random.choice(
                             np.where(self.qValues == np.max(self.qValues))[0]
                             )
@@ -159,7 +159,7 @@ class SimpleCNNagent():
     def getAction(self,state):
         self.model.eval()
         X = self.model.stitch_batch([self.model.stitch(state)])
-        self.qValues = self.model(X).cpu().detach().numpy()[0]
+        self.qValues = self.model(*X).cpu().detach().numpy()[0]
         action = np.random.choice(
                             np.where(self.qValues == np.max(self.qValues))[0]
                             )
@@ -194,10 +194,10 @@ class SimpleCNNagent():
         a = a.T
         self.model.eval()
         X = n
-        qVal_n = self.model(X).cpu().detach().numpy()
+        qVal_n = self.model(*X).cpu().detach().numpy()
         qMax_n = np.max(qVal_n, axis  = 1)
         X = c
-        qVal_c = self.model(X).cpu().detach().numpy()
+        qVal_c = self.model(*X).cpu().detach().numpy()
         Y = copy.deepcopy(qVal_c)
         y = np.zeros(r.shape)
         ndx = np.where(d == True)
@@ -217,7 +217,7 @@ class SimpleCNNagent():
     
     def summaryWriter_showNetwork(self, curr_state) :
         X = self.model.stitch_batch([self.model.stitch(curr_state)])
-        self.sw.add_graph(self.model, [X])
+        self.sw.add_graph(self.model, X)
     
     def summaryWriter_addMetrics(self, episode, loss, reward, lenEpisode):
         self.sw.add_scalar('Loss', loss, episode)
