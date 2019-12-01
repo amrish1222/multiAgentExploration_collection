@@ -20,7 +20,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 class agentModelCNN1(nn.Module):
-    def __init__(self,env, device):
+    def __init__(self,env, device, loggingLevel):
         super().__init__()
         self.stateSpaceSz, \
         self.w, \
@@ -30,6 +30,7 @@ class agentModelCNN1(nn.Module):
         self.mrPos, \
         self.dCharge = env.getStateSpace()
         
+        self.loggingLevel = loggingLevel
         self.device = device
         
         # cnn
@@ -46,11 +47,21 @@ class agentModelCNN1(nn.Module):
         self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
     
     def forward(self, x1, x2):
-#        x1,x2 = x
-        
+        #logging parameters init
+        self.x1_cnn1  = 0
+        self.x1_cnn2  = 0
+        self.x1_cnn = 0
         #cnn
+        if self.loggingLevel == 3:
+            self.x1_cnn = x1
+            
         x1 = F.relu(self.mp1(self.cnn1(x1)))
+        if self.loggingLevel == 3:
+            self.x1_cnn1 = x1
+            
         x1 = F.relu(self.cnn2(x1))
+        if self.loggingLevel == 3:
+            self.x1_cnn2 = x1
     
         #fc
         x2 = F.relu(self.l1(x2))
@@ -59,6 +70,7 @@ class agentModelCNN1(nn.Module):
         x = torch.cat((x1.flatten(start_dim = 1),x2), dim = 1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
+
         return x
 
     def stitch_batch(self,stitched_states):
@@ -97,7 +109,7 @@ class agentModelCNN1(nn.Module):
         return (cnn_i, fc_i)
     
 class SimpleCNNagent():
-    def __init__(self,env):
+    def __init__(self,env, loggingLevel):
         self.trainX = []
         self.trainY = []
         self.replayMemory = []
@@ -110,13 +122,14 @@ class SimpleCNNagent():
         self.batchSize = 128
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
+        self.loggingLevel = loggingLevel
         self.buildModel(env)
         self.sw = SummaryWriter(log_dir=f"tf_log/demo_CNN{random.randint(0, 1000)}")
         
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print(f'Device : {self.device}')
-        self.model = agentModelCNN1(env, self.device).to(self.device)
+        self.model = agentModelCNN1(env, self.device, self.loggingLevel).to(self.device)
         self.loss_fn = nn.MSELoss()
 #        self.optimizer = optim.SGD(self.model.parameters(), lr=self.learningRate)
         self.optimizer = optim.Adam(self.model.parameters(), lr = self.learningRate)
@@ -224,9 +237,15 @@ class SimpleCNNagent():
         self.sw.add_scalar('Reward', reward, episode)
         self.sw.add_scalar('Episode Length', lenEpisode, episode)
         
-        self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
-        self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
-        self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
+        if self.loggingLevel == 2:
+            self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
+            self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
+            self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
+        
+        if self.loggingLevel == 3:
+            self.sw.add_images("CNN In", self.model.x1_cnn[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
+            self.sw.add_images("CNN1 Out", self.model.x1_cnn1[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
+            self.sw.add_images("CNN2 Out", self.model.x1_cnn2[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
     
     def summaryWriter_close(self):
         self.sw.close()

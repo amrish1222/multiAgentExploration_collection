@@ -32,8 +32,8 @@ loss_history = [] # remove
 
 dispFlag = True
 
-#dAgent = sNN.SimpleNNagent(env)
-dAgent = cNN.SimpleCNNagent(env)
+#dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
+dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \

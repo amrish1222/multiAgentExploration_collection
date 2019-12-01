@@ -19,7 +19,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 class agentModelFC1(nn.Module):
-    def __init__(self,env, device):
+    def __init__(self,env, device, loggingLevel):
         super().__init__()
         self.stateSpaceSz, \
         self.w, \
@@ -29,6 +29,7 @@ class agentModelFC1(nn.Module):
         self.mrPos, \
         self.dCharge = env.getStateSpace()
         
+        self.loggingLevel = loggingLevel
         self.device = device
         
         self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/2))
@@ -61,7 +62,7 @@ class agentModelFC1(nn.Module):
         return x
         
 class SimpleNNagent():
-    def __init__(self,env):
+    def __init__(self,env, loggingLevel):
         self.trainX = []
         self.trainY = []
         self.replayMemory = []
@@ -74,13 +75,14 @@ class SimpleNNagent():
         self.batchSize = 128
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
+        self.loggingLevel = loggingLevel
         self.buildModel(env)
         self.sw = SummaryWriter(log_dir=f"tf_log/demoNN_{random.randint(0, 1000)}")
         
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print(f'Device : {self.device}')
-        self.model = agentModelFC1(env, self.device).to(self.device)
+        self.model = agentModelFC1(env, self.device, self.loggingLevel).to(self.device)
         self.loss_fn = nn.MSELoss()
 #        self.optimizer = optim.SGD(self.model.parameters(), lr=self.learningRate)
         self.optimizer = optim.Adam(self.model.parameters(), lr = self.learningRate)
@@ -189,9 +191,10 @@ class SimpleNNagent():
         self.sw.add_scalar('Reward', reward, episode)
         self.sw.add_scalar('Episode Length', lenEpisode, episode)
         
-        self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
-        self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
-        self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
+        if self.loggingLevel == 2:
+            self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
+            self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
+            self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
     
     def summaryWriter_close(self):
         self.sw.close()
