@@ -12,6 +12,7 @@ import pickle as pkl
 import numpy as np
 
 import Training.SimpleNNagent as sNN
+import Training.SimpleCNNagent as cNN
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -25,14 +26,17 @@ env = Env(NUM_DR, NUM_MR)
 
 # Parameters
 NUM_EPISODES = 5000
-LEN_EPISODE = 200
+LEN_EPISODE = 500
 reward_history = [] # remove
 loss_history = [] # remove
 
 dispFlag = True
 
-dAgent = sNN.SimpleNNagent(env) #todo get no of in / op size for nn init
-dAgent.summaryWriter_showNetwork()
+#dAgent = sNN.SimpleNNagent(env)
+dAgent = cNN.SimpleCNNagent(env)
+
+curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
+#dAgent.summaryWriter_showNetwork(curr_state)
     
 aDocks = []
 for i in range(NUM_DR):
@@ -132,33 +136,34 @@ for episode in range(NUM_EPISODES):
             # Record history
             reward_history.append(episode_reward)
             loss_history.append(episode_loss)
-            dAgent.summaryWriter_addMetrics(episode, episode_loss, episode_reward)
+            dAgent.summaryWriter_addMetrics(episode, episode_loss, episode_reward, step)
             # You may want to plot periodically instead of after every episode
             # Otherwise, things will slow
             if episode % 25 == 0:
-                if dispFlag:
-                    fig = plt.figure(1)
-                    plt.clf()
-#                    plt.xlim([0,NUM_EPISODES])
-                    plt.plot(reward_history,'ro')
-                    plt.xlabel('Episode')
-                    plt.ylabel('Reward')
-                    plt.title('Reward Per Episode')
-                    plt.pause(0.01)
-                    fig.canvas.draw()
-                    
-                    fig = plt.figure(2)
-                    plt.clf()
-#                    plt.xlim([0,NUM_EPISODES])
-                    plt.plot(loss_history,'bo')
-                    plt.xlabel('Episode')
-                    plt.ylabel('Loss')
-                    plt.title('Loss per episode')
-                    plt.pause(0.01)
-                    fig.canvas.draw()
-                
-                dAgent.saveModel("model_torch.pt")
+# =============================================================================
+#                 if dispFlag:
+#                     fig = plt.figure(1)
+#                     plt.clf()
+# #                    plt.xlim([0,NUM_EPISODES])
+#                     plt.plot(reward_history,'ro')
+#                     plt.xlabel('Episode')
+#                     plt.ylabel('Reward')
+#                     plt.title('Reward Per Episode')
+#                     plt.pause(0.01)
+#                     fig.canvas.draw()
+#                     
+#                     fig = plt.figure(2)
+#                     plt.clf()
+# #                    plt.xlim([0,NUM_EPISODES])
+#                     plt.plot(loss_history,'bo')
+#                     plt.xlabel('Episode')
+#                     plt.ylabel('Loss')
+#                     plt.title('Loss per episode')
+#                     plt.pause(0.01)
+#                     fig.canvas.draw()
+# =============================================================================
+                dAgent.saveModel("checkpoints")
             break
     
-dAgent.saveModel("model_torch.h5")
+dAgent.saveModel("checkpoints")
 dAgent.summaryWriter_close()
