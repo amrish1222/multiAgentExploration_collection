@@ -33,7 +33,7 @@ class Render:
         self.rover_surface=self.rover_icon()
         
         #FLAGS
-        self.showGrid_f = False
+        self.showGrid_f = True
     
     def reset(self, drone,mobile_robot,coll_pts):
         self.drones=drone

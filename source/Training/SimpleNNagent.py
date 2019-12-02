@@ -36,7 +36,7 @@ class agentModelFC1(nn.Module):
         self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/2), out_features = int(self.stateSpaceSz/8))
         self.l3 = nn.Linear(in_features = int(self.stateSpaceSz/8), out_features = 64)
         self.l4 = nn.Linear(in_features = 64, out_features = len(env.getActionSpace()))
-    
+
     def stitch(self,state):
         n_mrPos, \
         n_mrVel, \
@@ -69,7 +69,7 @@ class SimpleNNagent():
         self.maxReplayMemory = 5000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
-        self.epsilonDecay = 0.997
+        self.epsilonDecay = 0.99997
         self.discount = 0.95
         self.learningRate = 0.002
         self.batchSize = 128
@@ -116,7 +116,7 @@ class SimpleNNagent():
     def newGame(self):
         self.trainX = []
         self.trainY = []
-        print("new game")
+#        print("new game")
     
     def getTrainAction(self,state):
         action = self.EpsilonGreedyPolicy(state)
@@ -190,6 +190,7 @@ class SimpleNNagent():
         self.sw.add_scalar('Loss', loss, episode)
         self.sw.add_scalar('Reward', reward, episode)
         self.sw.add_scalar('Episode Length', lenEpisode, episode)
+        self.sw.add_scalar('Epsilon', self.epsilon, episode)
         
         if self.loggingLevel == 2:
             self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)

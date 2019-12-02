@@ -58,6 +58,7 @@ class Drone:
         distFromParent = np.linalg.norm(self.curPos - self.parentPos)
         if self.instantCharge and (distFromParent < self.dockingThreshold):
             self.currentCharge = self.maxCharge
+#            print("recharged")
     
     def updateTour(self):
         if len(self.tourTaken) > 0:
@@ -70,11 +71,13 @@ class Drone:
 
     
     def getState(self):
-        if self.isDocked:
-            time2release = max(0,self.maxCharge - self.currentCharge * self.chargeTimeFactor)
-        else:
-            time2release = 0
+#        if self.isDocked:
+#            time2release = max(0,self.maxCharge - self.currentCharge * self.chargeTimeFactor)
+#        else:
+#            time2release = 0
+        
+        distFromParentL1 = np.linalg.norm(self.curPos - self.parentPos, ord  = 1)
         currChargeDist = self.currentCharge * self.maxVelocity
-        return self.curPos, self.curVel, self.tourTaken, round(currChargeDist, 3), self.isDocked, time2release
+        return self.curPos, self.curVel, self.tourTaken, round(currChargeDist, 3), self.isDocked, distFromParentL1
         
         
