@@ -18,7 +18,8 @@ import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
 
-class agentModelFC1(nn.Module):
+
+class agentModelCNN1(nn.Module):
     def __init__(self,env, device, loggingLevel):
         super().__init__()
         self.stateSpaceSz, \
@@ -32,10 +33,62 @@ class agentModelFC1(nn.Module):
         self.loggingLevel = loggingLevel
         self.device = device
         
-        self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/2))
-        self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/2), out_features = int(self.stateSpaceSz/8))
-        self.l3 = nn.Linear(in_features = int(self.stateSpaceSz/8), out_features = 64)
-        self.l4 = nn.Linear(in_features = 64, out_features = len(env.getActionSpace()))
+        # cnn
+        self.cnn1 = nn.Conv2d(in_channels = 1, out_channels = 5, kernel_size = 5)
+        self.mp1 = nn.MaxPool2d(2)
+        self.cnn2 = nn.Conv2d(in_channels = 5, out_channels = 1, kernel_size = 5)
+        
+        # fc
+        self.fcInputs = self.mrPos + self.mrVel + self.drPos + self.dCharge
+        self.l1 = nn.Linear(in_features = self.fcInputs, out_features = self.fcInputs)
+        
+        # concat
+        self.fc1 = nn.Linear(in_features = (14*14)+self.fcInputs, out_features = 256)
+        self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
+    
+    def forward(self, x1, x2):
+        #logging parameters init
+        self.x1_cnn1  = 0
+        self.x1_cnn2  = 0
+        self.x1_cnn = 0
+        #cnn
+        if self.loggingLevel == 3:
+            self.x1_cnn = x1
+            
+        x1 = F.relu(self.mp1(self.cnn1(x1)))
+        if self.loggingLevel == 3:
+            self.x1_cnn1 = x1
+            
+        x1 = F.relu(self.cnn2(x1))
+        if self.loggingLevel == 3:
+            self.x1_cnn2 = x1
+    
+        #fc
+        x2 = F.relu(self.l1(x2))
+        
+        #concat
+        x = torch.cat((x1.flatten(start_dim = 1),x2), dim = 1)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+
+        return x
+
+    def stitch_batch(self,stitched_states):
+        # cnn tensor = [num_samples, num_channels, num_width, num_height]
+        cnn_x = np.zeros((len(stitched_states),
+                          stitched_states[0][0].shape[1],
+                          stitched_states[0][0].shape[2],
+                          stitched_states[0][0].shape[3]))
+        fc_x = []
+        for ndx, (cnn_i, fc_i) in enumerate(stitched_states):
+            cnn_x[ndx, :, : , :] = cnn_i
+            fc_x.append(fc_i)
+        cnn_x = torch.from_numpy(cnn_x).to(self.device)
+        cnn_x = cnn_x.float()
+        fc_x = torch.from_numpy(np.reshape(np.asarray(fc_x),
+                                           (len(stitched_states),-1))).to(self.device)
+        fc_x = fc_x.float()
+        return (cnn_x, fc_x)
     
     def stitch(self,state):
         n_mrPos, \
@@ -47,21 +100,15 @@ class agentModelFC1(nn.Module):
         n_dock, \
         n_reward, \
         n_done = state
-        
-        return np.hstack((np.asarray(n_mrPos).reshape(-1),
+        fc_i = np.hstack((np.asarray(n_mrPos).reshape(-1),
                           np.asarray(n_mrVel).reshape(-1),
-                          np.asarray(n_localArea).reshape(-1),
                           np.asarray(n_dronePos).reshape(-1),
                           np.asarray(n_droneCharge).reshape(-1)))
+        n_localArea = np.asarray(n_localArea)
+        cnn_i = n_localArea.reshape((1, 1, n_localArea.shape[0], n_localArea.shape[1]))
+        return (cnn_i, fc_i)
     
-    def forward(self, x):
-        x = F.relu(self.l1(x))
-        x = F.relu(self.l2(x))
-        x = F.relu(self.l3(x))
-        x = self.l4(x)
-        return x
-        
-class SimpleNNagent():
+class SimpleCNNagent():
     def __init__(self,env, loggingLevel):
         self.trainX = []
         self.trainY = []
@@ -77,23 +124,23 @@ class SimpleNNagent():
         self.nActions = len(self.envActions)
         self.loggingLevel = loggingLevel
         self.buildModel(env)
-        self.sw = SummaryWriter(log_dir=f"tf_log/demoNN_{random.randint(0, 1000)}")
+        self.sw = SummaryWriter(log_dir=f"tf_log/demo_CNN{random.randint(0, 1000)}")
         
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print(f'Device : {self.device}')
-        self.model = agentModelFC1(env, self.device, self.loggingLevel).to(self.device)
+        self.model = agentModelCNN1(env, self.device, self.loggingLevel).to(self.device)
         self.loss_fn = nn.MSELoss()
 #        self.optimizer = optim.SGD(self.model.parameters(), lr=self.learningRate)
         self.optimizer = optim.Adam(self.model.parameters(), lr = self.learningRate)
         
     def trainModel(self):
         self.model.train()
-        X = torch.from_numpy(self.trainX).to(self.device)
+        X = self.trainX
         Y = torch.from_numpy(self.trainY).to(self.device)
         for i in range(2): # number epoh
             self.optimizer.zero_grad()
-            predY = self.model(X.float())
+            predY = self.model(*X)
             loss = self.loss_fn(Y,predY)
             loss.backward()
             self.optimizer.step()
@@ -106,8 +153,8 @@ class SimpleNNagent():
             #ChooseMax
             #Handle multiple max
             self.model.eval()
-            X = torch.from_numpy(np.reshape(self.model.stitch(state),(1,-1))).to(self.device)
-            self.qValues = self.model(X.float()).cpu().detach().numpy()[0]
+            X = self.model.stitch_batch([self.model.stitch(state)])
+            self.qValues = self.model(*X).cpu().detach().numpy()[0]
             action = np.random.choice(
                             np.where(self.qValues == np.max(self.qValues))[0]
                             )
@@ -124,8 +171,8 @@ class SimpleNNagent():
     
     def getAction(self,state):
         self.model.eval()
-        X = torch.from_numpy(np.reshape(self.model.stitch(state),(1,-1))).to(self.device)
-        self.qValues = self.model(X.float()).cpu().detach().numpy()[0]
+        X = self.model.stitch_batch([self.model.stitch(state)])
+        self.qValues = self.model(*X).cpu().detach().numpy()[0]
         action = np.random.choice(
                             np.where(self.qValues == np.max(self.qValues))[0]
                             )
@@ -146,25 +193,24 @@ class SimpleNNagent():
             minibatch = random.sample(self.replayMemory, self.batchSize)
         else:
             minibatch = self.replayMemory
-        bSize = len(minibatch)
         for ndx,[currState, nextState, action] in enumerate(minibatch):
             c.append(self.model.stitch(currState))
             n.append(self.model.stitch(nextState))
             r.append(nextState[-2])
             d.append(nextState[-1])
             a.append([ndx, action])
-        c = np.asanyarray(c)
-        n = np.asanyarray(n)
+        c = self.model.stitch_batch(c)
+        n = self.model.stitch_batch(n)
         r = np.asanyarray(r)
         d = np.asanyarray(d)
         a = np.asanyarray(a)
         a = a.T
         self.model.eval()
-        X = torch.from_numpy(np.reshape(n,(bSize,-1))).to(self.device)
-        qVal_n = self.model(X.float()).cpu().detach().numpy()
+        X = n
+        qVal_n = self.model(*X).cpu().detach().numpy()
         qMax_n = np.max(qVal_n, axis  = 1)
-        X = torch.from_numpy(np.reshape(c,(bSize,-1))).to(self.device)
-        qVal_c = self.model(X.float()).cpu().detach().numpy()
+        X = c
+        qVal_c = self.model(*X).cpu().detach().numpy()
         Y = copy.deepcopy(qVal_c)
         y = np.zeros(r.shape)
         ndx = np.where(d == True)
@@ -182,8 +228,8 @@ class SimpleNNagent():
     def loadModel(self, filePath):
         self.model = torch.load(filePath)
     
-    def summaryWriter_showNetwork(self, curr_state):
-        X = torch.tensor(list(self.model.stitch(curr_state))).to(self.device)
+    def summaryWriter_showNetwork(self, curr_state) :
+        X = self.model.stitch_batch([self.model.stitch(curr_state)])
         self.sw.add_graph(self.model, X)
     
     def summaryWriter_addMetrics(self, episode, loss, reward, lenEpisode):
@@ -195,6 +241,11 @@ class SimpleNNagent():
             self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
             self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
             self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
+        
+        if self.loggingLevel == 3:
+            self.sw.add_images("CNN In", self.model.x1_cnn[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
+            self.sw.add_images("CNN1 Out", self.model.x1_cnn1[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
+            self.sw.add_images("CNN2 Out", self.model.x1_cnn2[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
     
     def summaryWriter_close(self):
         self.sw.close()

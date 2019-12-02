@@ -45,7 +45,7 @@ for episodes in range(NUM_EPISODES):
     #    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     #    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
         mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done = env.step(mrActions, droneActions, docks)
-        print(reward)
+        print(dronePos, droneVel)
         env.render()
         
         # check if any unexploredArea in local Area for static MobileRobot test
