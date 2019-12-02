@@ -206,9 +206,14 @@ class Env:
         reward = []
         for drone in self.drones:
             states = drone.getState()
+            chargeRemainDist = int(states[3]/GRID_SZ)
+            maxChargeDist = MAX_CHARGE_DIST
+            distFromMobileRob = int(states[-1]/ GRID_SZ)
+            
             x,y = states[0]
             x = int(x//GRID_SZ)
             y = int(y//GRID_SZ)
+            
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                 reward.append(DRONE_NEW_AREA_REWARD)
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
@@ -230,6 +235,11 @@ class Env:
                     reward[-1] +=  0
                 else:
                     reward[-1] += RETURN_POSSIBLE_RWD
+                    
+            if distFromMobileRob < 1 and chargeRemainDist < 5:
+                print("last minute charge")
+                reward[-1] += CENTER_RWD
+                
         return reward
                 
 

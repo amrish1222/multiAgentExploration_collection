@@ -27,16 +27,24 @@ maxMobileRobVelocity=0.25
 ## Drone Constants
 
 maxDroneVelocity= 0.5
-dockingThreshold = maxDroneVelocity * timeStep * 1.5
+dockingThreshold = maxDroneVelocity * timeStep * 2
 MAX_CHARGE = 25
-DRONE_NEW_AREA_REWARD = 5
+MAX_CHARGE_DIST = MAX_CHARGE * maxDroneVelocity
+
+DRONE_NEW_AREA_REWARD = 100
 DRONE_OLD_AREA_REWARD = -1
-DRONE_DISCHARGED_REWARD = -100
+
+DRONE_DISCHARGED_REWARD = -1000
+CHARGE_DELTA = 2
 
 DRONE_CURR_CHARGE_RWD = False
+
 EXCESS_RETURN_CHARGE_RWD = False
+
 DO_RETURN_POSSIBLE_RWD = True
-RETURN_POSSIBLE_RWD  = -50
+RETURN_POSSIBLE_RWD  = -100
+
+CENTER_RWD = 100
 
 ## Area
 GRID_SZ = maxDroneVelocity * timeStep * 1.2

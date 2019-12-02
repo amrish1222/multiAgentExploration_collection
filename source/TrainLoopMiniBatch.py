@@ -52,11 +52,11 @@ for episode in range(NUM_EPISODES):
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500:
+        if episode % 25 == 0 and dispFlag or episode > 0:
             env.render()
         
-        if step == LEN_EPISODE -1:
-            print("200 steps run")
+        if step >100:
+            print(f"steps,reward:{step, episode_reward}")
         
         # Randomly sample an action from the action space
         # Should really be your exploration/exploitation policy

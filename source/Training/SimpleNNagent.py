@@ -35,9 +35,12 @@ class agentModel(nn.Module):
 #         self.l3 = nn.Linear(in_features = int(self.stateSpaceSz/8), out_features = 64)
 #         self.l4 = nn.Linear(in_features = 64, out_features = len(env.getActionSpace()))
 # =============================================================================
-        self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = int(self.stateSpaceSz/16))
-        self.l2 = nn.Linear(in_features = int(self.stateSpaceSz/16), out_features = 8)
-        self.l3 = nn.Linear(in_features = 8, out_features = len(env.getActionSpace()))
+        self.l1 = nn.Linear(in_features = self.stateSpaceSz, out_features = 100)
+        self.l2 = nn.Linear(in_features = 100, out_features = 100)
+        self.l3 = nn.Linear(in_features = 100, out_features = 20)
+        self.l4 = nn.Linear(in_features = 20, out_features = 20)
+        self.l5 = nn.Linear(in_features = 20, out_features = 20)
+        self.l6 = nn.Linear(in_features = 20, out_features = len(env.getActionSpace()))
         
     def stitch(self,state):
         n_mrPos, \
@@ -66,7 +69,10 @@ class agentModel(nn.Module):
         
         x = F.relu(self.l1(x))
         x = F.relu(self.l2(x))
-        x = self.l3(x)
+        x = F.relu(self.l3(x))
+        x = F.relu(self.l4(x))
+        x = F.relu(self.l5(x))
+        x = self.l6(x)
         return x
         
 class SimpleNNagent():
@@ -74,10 +80,10 @@ class SimpleNNagent():
         self.trainX = []
         self.trainY = []
         self.replayMemory = []
-        self.maxReplayMemory = 5000
+        self.maxReplayMemory = 10000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
-        self.epsilonDecay = 0.99997
+        self.epsilonDecay = 0.9999
         self.discount = 0.95
         self.learningRate = 0.002
         self.batchSize = 128
