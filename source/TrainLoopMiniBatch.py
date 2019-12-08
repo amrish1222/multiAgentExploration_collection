@@ -77,8 +77,9 @@ for episode in tqdm(range(NUM_EPISODES)):
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500 or RENDER_PYGAME:
-            env.render()
+        if episode % 25 == 0 and dispFlag or episode > 500:
+            if RENDER_PYGAME:
+                env.render()
         
         if step == LEN_EPISODE -1:
             print("200 steps run")

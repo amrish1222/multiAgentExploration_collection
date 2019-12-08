@@ -221,22 +221,24 @@ class Env:
             
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                 # unexplored region => new area 
-                new_area = True
+                new_area = 1
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                 # explored region => old area
-                new_area = False
+                new_area = 0
             else:
-                new_area = False
+                new_area = 0
             
-            r = 0    
-            if new_area == False and c_d <= 0 :
-                r = 10
-            if new_area == False and c_d > 0 :
-                r = -10
-            if new_area == True and c_d <= 0 :
-                r = 15
-            if new_area == True and c_d <= 0 :
-                r = 10
+            r = ( (5 * c_d) - (5 * (1-c_d)) ) ** 1-new_area
+            
+#            r = 0
+#            if new_area == False and c_d <= 0 :
+#                r = 10
+#            if new_area == False and c_d > 0 :
+#                r = -10
+#            if new_area == True and c_d <= 0 :
+#                r = 0
+#            if new_area == True and c_d <= 0 :
+#                r = 10
             if rem_charge == 0 and l1_dist2par != 0:
                 r = -1000
             reward.append(r)
