@@ -214,19 +214,20 @@ class Env:
                 x,y = states[0]
                 x = int(x//GRID_SZ)
                 y = int(y//GRID_SZ)
-                rem_charge = int(states[3]//GRID_SZ)
-                l1_dist2par = int(states[-1]//GRID_SZ)
+                rem_charge = states[3]/GRID_SZ
+                l1_dist2par = states[-1]/GRID_SZ
                 if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                     # unexplored region => new area 
-                    reward.append(10)
+                    reward.append(25)
                 elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                     # explored region => old area
-                    reward.append(-5)
+                    reward.append(-1)
                 else:
                     reward.append(0)
+                    
                 if rem_charge <= 0:
                     # penalize for die
-                    reward[-1] += -500
+                    reward[-1] += -1000
                    
                 if (rem_charge - l1_dist2par*1.2) >= 0:
                     # if inside charge radius 

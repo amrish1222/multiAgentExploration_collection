@@ -113,13 +113,13 @@ class DoubleCNNagent():
         self.trainY1 = []
         self.trainY2 = []
         self.replayMemory = []
-        self.maxReplayMemory = 20000
+        self.maxReplayMemory = 30000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
         self.epsilonDecay = 0.9990
         self.discount = 0.95
         self.learningRate = 0.002
-        self.batchSize = 128
+        self.batchSize = 512
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
         self.loggingLevel = loggingLevel
@@ -252,8 +252,8 @@ class DoubleCNNagent():
     
     def summaryWriter_showNetwork(self, curr_state) :
         X = self.model1.stitch_batch([self.model1.stitch(curr_state)])
-        self.sw.add_graph(self.model1, X, True)
-        self.sw.add_graph(self.model2, X, True)
+        self.sw.add_graph(self.model1, X, False)
+        self.sw.add_graph(self.model2, X, False)
     
     def summaryWriter_addMetrics(self, episode, loss, reward, lenEpisode):
         self.sw.add_scalar('Loss', loss, episode)
