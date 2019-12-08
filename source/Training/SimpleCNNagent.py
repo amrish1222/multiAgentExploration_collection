@@ -202,13 +202,13 @@ class SimpleCNNagent():
         self.trainX = []
         self.trainY = []
         self.replayMemory = []
-        self.maxReplayMemory = 10000
+        self.maxReplayMemory = 20000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
         self.epsilonDecay = 0.997
-        self.discount = 0.8
-        self.learningRate = 0.005
-        self.batchSize = 256
+        self.discount = 0.95
+        self.learningRate = 0.002
+        self.batchSize = 128
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
         self.loggingLevel = loggingLevel

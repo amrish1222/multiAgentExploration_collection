@@ -5,6 +5,8 @@
 # Copyright
 # Constants
 
+RENDER_PYGAME = True
+
 NUM_EPISODES = 100
 
 screenHeight = 1000

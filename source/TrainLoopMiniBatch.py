@@ -77,7 +77,7 @@ for episode in tqdm(range(NUM_EPISODES)):
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500 or True:
+        if episode % 25 == 0 and dispFlag or episode > 500 or RENDER_PYGAME:
             env.render()
         
         if step == LEN_EPISODE -1:
@@ -156,7 +156,7 @@ for episode in tqdm(range(NUM_EPISODES)):
         
         if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
             # Epsilon Decay
-            if dAgent.epsilon >= dAgent.minEpsilon and episode % 5 == 0:
+            if dAgent.epsilon >= dAgent.minEpsilon:
                 dAgent.epsilon *= dAgent.epsilonDecay
             
             # Record history

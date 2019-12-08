@@ -6,7 +6,6 @@
 # brief Environment class for the simulation
 
 import numpy as np
-import pygame
 import random
 import copy
 
@@ -34,12 +33,13 @@ class Env:
         self.totalAreaWithDrone = np.copy(self.totalArea)
         
         #MAIN LOOP
-        self.display=Render(len(self.drones),
-                            len(self.mobilerobots),
-                            self.drones,
-                            self.mobilerobots,
-                            self.collectionPts)
-        
+        if RENDER_PYGAME:
+            self.display=Render(len(self.drones),
+                                len(self.mobilerobots),
+                                self.drones,
+                                self.mobilerobots,
+                                self.collectionPts)
+            
     def initTotalArea(self):
         # beyond = 0
         # unexplored = 50
@@ -88,7 +88,8 @@ class Env:
         self.collectionPts = self.genCollectionPts(self.numCollectionPts)
         self.totalArea = self.initTotalArea()
         self.totalAreaWithDrone = np.copy(self.totalArea)
-        self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
+        if RENDER_PYGAME:
+            self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
         return self.step([0]*len(self.mobilerobots),
                          [0]*len(self.drones),
                          [False]*len(self.drones))
@@ -180,10 +181,14 @@ class Env:
                 done
                 
     def checkClose(self):
-        return self.display.check()
+        if RENDER_PYGAME:
+            return self.display.check()
+        else:
+            return False
 
     def render(self):
-        self.display.render(self.drones,self.mobilerobots, self.totalAreaWithDrone)
+        if RENDER_PYGAME:
+            self.display.render(self.drones,self.mobilerobots, self.totalAreaWithDrone)
     
     def getLocalArea(self,mr):
         x, y = mr.getState()[0]
@@ -209,29 +214,32 @@ class Env:
             x,y = states[0]
             x = int(x//GRID_SZ)
             y = int(y//GRID_SZ)
-            rem_charge = int(states[3]//GRID_SZ)
-            l1_dist2par = int(states[-1]//GRID_SZ)
+            
+            rem_charge = states[3]
+            l1_dist2par = states[-1]
+            c_d = MAX_CHARGE - rem_charge
+            
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                 # unexplored region => new area 
-                reward.append(10)
+                new_area = True
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                 # explored region => old area
-                reward.append(-10)
+                new_area = False
             else:
-                reward.append(0)
-            if rem_charge <= 0:
-                # penalize for die
-                reward[-1] += -1000
-               
-            if (rem_charge - l1_dist2par*1.2) >= 0:
-                # if inside charge radius 
-                reward[-1] +=  1
-            else:
-                # if outside charge radius
-                reward[-1] += -50
-            if l1_dist2par <= 1 and rem_charge <=5:
-                reward[-1] += 1000
-                
+                new_area = False
+            
+            r = 0    
+            if new_area == False and c_d <= 0 :
+                r = 10
+            if new_area == False and c_d > 0 :
+                r = -10
+            if new_area == True and c_d <= 0 :
+                r = 15
+            if new_area == True and c_d <= 0 :
+                r = 10
+            if rem_charge == 0 and l1_dist2par != 0:
+                r = -1000
+            reward.append(r)
         return reward
                 
 
