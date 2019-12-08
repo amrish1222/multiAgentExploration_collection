@@ -78,6 +78,7 @@ class SimpleNNagent():
         self.loggingLevel = loggingLevel
         self.buildModel(env)
         self.sw = SummaryWriter(log_dir=f"tf_log/demoNN_{random.randint(0, 1000)}")
+        print(f"Log Dir: {self.sw.log_dir}")
         
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

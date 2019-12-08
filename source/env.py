@@ -216,12 +216,12 @@ class Env:
                 reward.append(10)
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                 # explored region => old area
-                reward.append(-5)
+                reward.append(-10)
             else:
                 reward.append(0)
             if rem_charge <= 0:
                 # penalize for die
-                reward[-1] += -500
+                reward[-1] += -1000
                
             if (rem_charge - l1_dist2par*1.2) >= 0:
                 # if inside charge radius 
@@ -230,7 +230,7 @@ class Env:
                 # if outside charge radius
                 reward[-1] += -50
             if l1_dist2par <= 1 and rem_charge <=5:
-                reward[-1] += 500
+                reward[-1] += 1000
                 
         return reward
                 

@@ -156,7 +156,7 @@ for episode in tqdm(range(NUM_EPISODES)):
         
         if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
             # Epsilon Decay
-            if dAgent.epsilon >= dAgent.minEpsilon and episode % 25 == 0:
+            if dAgent.epsilon >= dAgent.minEpsilon and episode % 5 == 0:
                 dAgent.epsilon *= dAgent.epsilonDecay
             
             # Record history
