@@ -18,6 +18,95 @@ import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
 
+class agentModelCNN2(nn.Module):
+    def __init__(self,env, device, loggingLevel):
+        super().__init__()
+        self.stateSpaceSz, \
+        self.w, \
+        self.h, \
+        self.drPos, \
+        self.mrVel, \
+        self.mrPos, \
+        self.dCharge = env.getStateSpace()
+        
+        self.loggingLevel = loggingLevel
+        self.device = device
+        
+        # cnn
+        self.cnn1 = nn.Conv2d(in_channels = 1, out_channels = 16, kernel_size = 5, stride = 2)
+        self.cnn2 = nn.Conv2d(in_channels = 16, out_channels = 32, kernel_size = 5, stride = 2)
+        self.cnn3 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 3, stride = 1)
+        
+        # fc
+        self.fcInputs = self.mrPos + self.mrVel + self.drPos + self.dCharge
+        self.l1 = nn.Linear(in_features = self.fcInputs, out_features = self.fcInputs)
+        
+        # concat
+        self.fc1 = nn.Linear(in_features = (6*6*32)+self.fcInputs, out_features = 256)
+        self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
+    
+    def forward(self, x1, x2):
+        #logging parameters init
+        self.x1_cnn1  = 0
+        self.x1_cnn2  = 0
+        self.x1_cnn = 0
+        #cnn
+        if self.loggingLevel == 3:
+            self.x1_cnn = x1
+            
+        x1 = F.relu(self.cnn1(x1))
+        x1 = F.relu(self.cnn2(x1))
+        if self.loggingLevel == 3:
+            self.x1_cnn1 = x1
+        x1 = F.relu(self.cnn3(x1))
+        if self.loggingLevel == 3:
+            self.x1_cnn2 = x1
+            
+        #fc
+        x2 = F.relu(self.l1(x2))
+        
+        #concat
+        x = torch.cat((x1.flatten(start_dim = 1),x2), dim = 1)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+
+        return x
+
+    def stitch_batch(self,stitched_states):
+        # cnn tensor = [num_samples, num_channels, num_width, num_height]
+        cnn_x = np.zeros((len(stitched_states),
+                          stitched_states[0][0].shape[1],
+                          stitched_states[0][0].shape[2],
+                          stitched_states[0][0].shape[3]))
+        fc_x = []
+        for ndx, (cnn_i, fc_i) in enumerate(stitched_states):
+            cnn_x[ndx, :, : , :] = cnn_i
+            fc_x.append(fc_i)
+        cnn_x = torch.from_numpy(cnn_x).to(self.device)
+        cnn_x = cnn_x.float()
+        fc_x = torch.from_numpy(np.reshape(np.asarray(fc_x),
+                                           (len(stitched_states),-1))).to(self.device)
+        fc_x = fc_x.float()
+        return (cnn_x, fc_x)
+    
+    def stitch(self,state):
+        n_mrPos, \
+        n_mrVel, \
+        n_localArea, \
+        n_dronePos, \
+        n_droneVel, \
+        n_droneCharge, \
+        n_dock, \
+        n_reward, \
+        n_done = state
+        fc_i = np.hstack((np.asarray(n_mrPos).reshape(-1),
+                          np.asarray(n_mrVel).reshape(-1),
+                          np.asarray(n_dronePos).reshape(-1),
+                          np.asarray(n_droneCharge).reshape(-1)))
+        n_localArea = np.asarray(n_localArea)
+        cnn_i = n_localArea.reshape((1, 1, n_localArea.shape[0], n_localArea.shape[1]))
+        return (cnn_i, fc_i)
+
 
 class agentModelCNN1(nn.Module):
     def __init__(self,env, device, loggingLevel):
@@ -113,13 +202,13 @@ class SimpleCNNagent():
         self.trainX = []
         self.trainY = []
         self.replayMemory = []
-        self.maxReplayMemory = 5000
+        self.maxReplayMemory = 10000
         self.epsilon = 1.0
         self.minEpsilon = 0.01
         self.epsilonDecay = 0.997
-        self.discount = 0.95
-        self.learningRate = 0.002
-        self.batchSize = 128
+        self.discount = 0.8
+        self.learningRate = 0.005
+        self.batchSize = 256
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
         self.loggingLevel = loggingLevel
@@ -129,7 +218,7 @@ class SimpleCNNagent():
     def buildModel(self,env):   
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print(f'Device : {self.device}')
-        self.model = agentModelCNN1(env, self.device, self.loggingLevel).to(self.device)
+        self.model = agentModelCNN2(env, self.device, self.loggingLevel).to(self.device)
         self.loss_fn = nn.MSELoss()
 #        self.optimizer = optim.SGD(self.model.parameters(), lr=self.learningRate)
         self.optimizer = optim.Adam(self.model.parameters(), lr = self.learningRate)
@@ -163,7 +252,6 @@ class SimpleCNNagent():
     def newGame(self):
         self.trainX = []
         self.trainY = []
-        print("new game")
     
     def getTrainAction(self,state):
         action = self.EpsilonGreedyPolicy(state)

@@ -209,27 +209,29 @@ class Env:
             x,y = states[0]
             x = int(x//GRID_SZ)
             y = int(y//GRID_SZ)
+            rem_charge = int(states[3]//GRID_SZ)
+            l1_dist2par = int(states[-1]//GRID_SZ)
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
-                reward.append(DRONE_NEW_AREA_REWARD)
+                # unexplored region => new area 
+                reward.append(10)
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
-                reward.append(DRONE_OLD_AREA_REWARD)
+                # explored region => old area
+                reward.append(-5)
             else:
                 reward.append(0)
-                
-            if states[3] <= 0:
-                reward[-1] += DRONE_DISCHARGED_REWARD
-            
-            if DRONE_CURR_CHARGE_RWD:
-                reward[-1] += states[3]
-                
-            if EXCESS_RETURN_CHARGE_RWD:
-                reward[-1] += states[3] - states[-1]
+            if rem_charge <= 0:
+                # penalize for die
+                reward[-1] += -500
                
-            if DO_RETURN_POSSIBLE_RWD: 
-                if (states[3] - states[-1]*1.2) >= 0:
-                    reward[-1] +=  0
-                else:
-                    reward[-1] += RETURN_POSSIBLE_RWD
+            if (rem_charge - l1_dist2par*1.2) >= 0:
+                # if inside charge radius 
+                reward[-1] +=  1
+            else:
+                # if outside charge radius
+                reward[-1] += -50
+            if l1_dist2par <= 1 and rem_charge <=5:
+                reward[-1] += 500
+                
         return reward
                 
 

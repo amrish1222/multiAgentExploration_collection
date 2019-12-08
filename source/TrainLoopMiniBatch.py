@@ -11,6 +11,8 @@ import time
 import pickle as pkl
 import numpy as np
 
+from tqdm import tqdm
+
 import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
 from env import Env
@@ -65,17 +67,17 @@ for i in range(NUM_MR):
     mActions.append(0)
 
 # Run for NUM_EPISODES
-for episode in range(NUM_EPISODES):
+for episode in tqdm(range(NUM_EPISODES)):
     dAgent.newGame()
     episode_reward = 0
     episode_loss = 0
     curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
-    print(f"episode, epsilon : {episode, dAgent.epsilon}")
+#    print(f"episode, epsilon : {episode, dAgent.epsilon}")
     
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500:
+        if episode % 25 == 0 and dispFlag or episode > 500 or True:
             env.render()
         
         if step == LEN_EPISODE -1:
@@ -143,8 +145,6 @@ for episode in range(NUM_EPISODES):
             dAgent.buildReplayMemory(c_s, n_s, dAction[ndx])
         loss = dAgent.buildMiniBatchTrainData()
         dAgent.trainModel()
-        if dAgent.epsilon >= dAgent.minEpsilon:
-            dAgent.epsilon *= dAgent.epsilonDecay
 
         # Record history
         reward = sum(n_reward)
@@ -155,6 +155,10 @@ for episode in range(NUM_EPISODES):
         curr_state = next_state
         
         if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+            # Epsilon Decay
+            if dAgent.epsilon >= dAgent.minEpsilon and episode % 25 == 0:
+                dAgent.epsilon *= dAgent.epsilonDecay
+            
             # Record history
             reward_history.append(episode_reward)
             loss_history.append(episode_loss)
