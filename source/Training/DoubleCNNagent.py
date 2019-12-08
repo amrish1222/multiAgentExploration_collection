@@ -247,8 +247,8 @@ class DoubleCNNagent():
         torch.save(self.model2, f"{filePath}/{self.model2.__class__.__name__}_2.pt")
     
     def loadModel(self, filePath):
-        self.model1 = torch.load(filePath + "_1")
-        self.model2 = torch.load(filePath + "_1")
+        self.model1 = torch.load(filePath)
+        self.model2 = torch.load(filePath)
     
     def summaryWriter_showNetwork(self, curr_state) :
         X = self.model1.stitch_batch([self.model1.stitch(curr_state)])
