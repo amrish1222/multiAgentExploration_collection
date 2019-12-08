@@ -15,6 +15,7 @@ from tqdm import tqdm
 
 import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
+import Training.DoubleCNNagent as dcNN
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -35,7 +36,8 @@ loss_history = [] # remove
 dispFlag = True
 
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
-dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
+#dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
+dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \

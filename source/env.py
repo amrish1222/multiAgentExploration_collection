@@ -208,41 +208,37 @@ class Env:
             self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
         
     def getReward(self):
-        reward = []
-        for drone in self.drones:
-            states = drone.getState()
-            x,y = states[0]
-            x = int(x//GRID_SZ)
-            y = int(y//GRID_SZ)
-            
-            rem_charge = states[3]
-            l1_dist2par = states[-1]
-            c_d = MAX_CHARGE - rem_charge
-            
-            if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
-                # unexplored region => new area 
-                new_area = 1
-            elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
-                # explored region => old area
-                new_area = 0
-            else:
-                new_area = 0
-            
-            r = ( (5 * c_d) - (5 * (1-c_d)) ) ** 1-new_area
-            
-#            r = 0
-#            if new_area == False and c_d <= 0 :
-#                r = 10
-#            if new_area == False and c_d > 0 :
-#                r = -10
-#            if new_area == True and c_d <= 0 :
-#                r = 0
-#            if new_area == True and c_d <= 0 :
-#                r = 10
-            if rem_charge == 0 and l1_dist2par != 0:
-                r = -1000
-            reward.append(r)
-        return reward
-                
+            reward = []
+            for drone in self.drones:
+                states = drone.getState()
+                x,y = states[0]
+                x = int(x//GRID_SZ)
+                y = int(y//GRID_SZ)
+                rem_charge = int(states[3]//GRID_SZ)
+                l1_dist2par = int(states[-1]//GRID_SZ)
+                if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
+                    # unexplored region => new area 
+                    reward.append(10)
+                elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
+                    # explored region => old area
+                    reward.append(-5)
+                else:
+                    reward.append(0)
+                if rem_charge <= 0:
+                    # penalize for die
+                    reward[-1] += -500
+                   
+                if (rem_charge - l1_dist2par*1.2) >= 0:
+                    # if inside charge radius 
+                    reward[-1] +=  1
+                else:
+                    # if outside charge radius
+                    reward[-1] += -50
+                    
+                if l1_dist2par <= 1 and rem_charge <=5:
+                    reward[-1] += 500
+                    
+            return reward
+                    
 
 
