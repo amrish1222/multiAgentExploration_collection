@@ -16,6 +16,7 @@ from tqdm import tqdm
 import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
 import Training.DoubleCNNagent as dcNN
+import Training.DoubleCNNagent_priority as dcNN_p
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -37,7 +38,8 @@ dispFlag = True
 
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
-dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
+#dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \
@@ -79,7 +81,7 @@ for episode in tqdm(range(NUM_EPISODES)):
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500:
+        if episode % 25 == 0 and dispFlag or episode > 1:
             if RENDER_PYGAME:
                 env.render()
         

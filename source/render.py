@@ -34,6 +34,7 @@ class Render:
         
         #FLAGS
         self.showGrid_f = True
+        self.render_show = True
     
     def reset(self, drone,mobile_robot,coll_pts):
         self.drones=drone
@@ -107,6 +108,13 @@ class Render:
             self.showGrid_f = True
         if keys[pygame.K_RIGHT]:
             self.showGrid_f = False
+        if keys[pygame.K_DOWN]:
+            self.render_show = True
+        if keys[pygame.K_UP]:
+            self.render_show = False
+            
+        if not self.render_show:
+            return
         
         if self.showGrid_f:
             self.area_blit(areaWithDrone)
