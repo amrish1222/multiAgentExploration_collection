@@ -5,7 +5,7 @@
 # Copyright
 # Constants
 
-RENDER_PYGAME = True
+RENDER_PYGAME = False
 
 NUM_EPISODES = 100
 

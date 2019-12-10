@@ -5,6 +5,8 @@ Created on Thu Nov 14 13:56:01 2019
 
 @author: bala
 """
+import warnings
+warnings.filterwarnings('ignore')
 
 import matplotlib.pyplot as plt
 import time
