@@ -5,6 +5,8 @@ Created on Thu Nov 14 13:56:01 2019
 
 @author: bala
 """
+import warnings
+warnings.filterwarnings('ignore')
 
 import matplotlib.pyplot as plt
 import time
@@ -85,7 +87,7 @@ for episode in tqdm(range(NUM_EPISODES)):
             if RENDER_PYGAME:
                 env.render()
         
-        if step == LEN_EPISODE -1:
+        if step == 200 -1:
             print("200 steps run")
         
         # Randomly sample an action from the action space

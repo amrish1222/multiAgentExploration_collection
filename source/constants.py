@@ -29,7 +29,7 @@ maxMobileRobVelocity=0.25
 ## Drone Constants
 
 maxDroneVelocity= 0.5
-dockingThreshold = maxDroneVelocity * timeStep * 1.5
+dockingThreshold = maxDroneVelocity * timeStep * 1.1
 MAX_CHARGE = 25
 
 
