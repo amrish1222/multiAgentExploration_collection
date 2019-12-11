@@ -17,6 +17,7 @@ import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
 import Training.DoubleCNNagent as dcNN
 import Training.DoubleCNNagent_priority as dcNN_p
+import Training.DoubleCNNagent_priority_Noisy as dcNN_pn
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -39,7 +40,8 @@ dispFlag = True
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
 #dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
-dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
+#dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
+dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \

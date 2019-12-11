@@ -261,7 +261,7 @@ class DoubleCNNagent():
         self.sw.add_scalar('Episode Length', lenEpisode, episode)
         self.sw.add_scalar('Epsilon', self.epsilon, episode)
         
-        if self.loggingLevel == 2:
+        if self.loggingLevel >= 2:
             self.sw.add_histogram('l1_1.bias', self.model1.l1.bias, episode)
             self.sw.add_histogram('l1_1.weight', self.model1.l1.weight, episode)
             self.sw.add_histogram('l1_1.weight.grad', self.model1.l1.weight.grad, episode)
@@ -270,7 +270,7 @@ class DoubleCNNagent():
             self.sw.add_histogram('l1_2.weight', self.model2.l1.weight, episode)
             self.sw.add_histogram('l1_@.weight.grad', self.model2.l1.weight.grad, episode)
         
-        if self.loggingLevel == 3:
+        if self.loggingLevel >= 3:
             self.sw.add_images("CNN In Model1", self.model1.x1_cnn[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
             self.sw.add_images("CNN1 Out Model1", self.model1.x1_cnn1[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
             self.sw.add_images("CNN2 Out Model1", self.model1.x1_cnn2[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
