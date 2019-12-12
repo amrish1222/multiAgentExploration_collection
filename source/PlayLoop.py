@@ -41,7 +41,7 @@ dispFlag = True
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
 #dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
-dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 0)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
 #dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
 
 dAgent.loadModel("checkpoints/agentModelCNN2_Double_Priprity_1.pt")
@@ -155,7 +155,7 @@ for episode in tqdm(range(NUM_EPISODES)):
         # Current state for next step
         curr_state = next_state
         
-        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done) or step == (LEN_EPISODE-1):
             
             # Record history
             reward_history.append(episode_reward)
