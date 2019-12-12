@@ -119,7 +119,7 @@ class DoubleCNNagent_Priority():
         self.memory = Memory(self.maxReplayMemory)
         self.epsilon = 1.0
         self.minEpsilon = 0.01
-        self.epsilonDecay = 0.9990
+        self.epsilonDecay = 0.997
         self.discount = 0.95
         self.learningRate = 0.002
         self.batchSize = 128

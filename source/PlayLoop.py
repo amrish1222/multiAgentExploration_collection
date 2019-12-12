@@ -7,6 +7,7 @@ Created on Thu Nov 14 13:56:01 2019
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import time
 import pickle as pkl
 import numpy as np
@@ -16,6 +17,8 @@ from tqdm import tqdm
 import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
 import Training.DoubleCNNagent as dcNN
+import Training.DoubleCNNagent_priority as dcNN_p
+import Training.DoubleCNNagent_priority_Noisy as dcNN_pn
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -28,7 +31,7 @@ NUM_MR = 1
 env = Env(NUM_DR, NUM_MR)
 
 # Parameters
-NUM_EPISODES = 100
+NUM_EPISODES = 5000
 LEN_EPISODE = 1000
 reward_history = [] # remove
 loss_history = [] # remove
@@ -37,8 +40,11 @@ dispFlag = True
 
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
-dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
-dAgent.loadModel("checkpoints/agentModelCNN2_Double_1.pt")
+#dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 0)
+#dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
+
+dAgent.loadModel("checkpoints/agentModelCNN2_Double_Priprity_1.pt")
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \

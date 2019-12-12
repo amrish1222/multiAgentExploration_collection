@@ -40,8 +40,8 @@ dispFlag = True
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
 #dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
-#dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
-dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
+#dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \
