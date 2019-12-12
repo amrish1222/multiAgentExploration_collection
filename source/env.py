@@ -221,6 +221,11 @@ class Env:
             self.totalAreaWithDrone[cx + 2, cy - 3 : cy - 1] = 200
             self.totalAreaWithDrone[cx + 1 : cx + 3, cy - 2] = 200
             
+            # add wall
+            self.totalAreaWithDrone[cx - 30 : cx + 30 , cy - 30] = 200
+            self.totalAreaWithDrone[cx - 30 : cx + 30 , cy + 30] = 200
+            self.totalAreaWithDrone[cx - 30 , cy - 30 : cy + 30] = 200
+            self.totalAreaWithDrone[cx + 30 , cy - 30 : cy + 30] = 200
       
 
 
@@ -238,33 +243,21 @@ class Env:
             
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                 # unexplored region => new area 
-                new_area = 1
+                new_area = 5
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                 # explored region => old area
-                new_area = 0
+                new_area = -5
             else:
                 new_area = 0
             
             if self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] == 200:
                 # obstacle
-                print("obs")
-                obs = -500
+                obs = -1000
             else:
                 obs = 0
             
-            r = (( (5 * c_d) - (5 * (1-c_d)) ) ** 1-new_area) + obs
-            
-#            r = 0
-#            if new_area == False and c_d <= 0 :
-#                r = 10
-#            if new_area == False and c_d > 0 :
-#                r = -10
-#            if new_area == True and c_d <= 0 :
-#                r = 0
-#            if new_area == True and c_d <= 0 :
-#                r = 10
-            if rem_charge == 0 and l1_dist2par != 0:
-                r = -1000
+            r = new_area + obs
+
             reward.append(r)
         return reward        
         

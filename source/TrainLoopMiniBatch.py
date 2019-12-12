@@ -31,7 +31,7 @@ env = Env(NUM_DR, NUM_MR)
 
 # Parameters
 NUM_EPISODES = 5000
-LEN_EPISODE = 1000
+LEN_EPISODE = 100
 reward_history = [] # remove
 loss_history = [] # remove
 
@@ -161,7 +161,7 @@ for episode in tqdm(range(NUM_EPISODES)):
         # Current state for next step
         curr_state = next_state
         
-        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+        if not np.any(n_localArea[0] == 50) or env.checkClose() or step == LEN_EPISODE-1 :#any(n_done):
             # Epsilon Decay
             if dAgent.epsilon >= dAgent.minEpsilon:
                 dAgent.epsilon *= dAgent.epsilonDecay
