@@ -252,6 +252,7 @@ class Env:
             
             if self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] == 200:
                 # obstacle
+                print("obs")
                 obs = -1000
             else:
                 obs = 0

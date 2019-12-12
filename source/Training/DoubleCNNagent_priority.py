@@ -293,11 +293,11 @@ class DoubleCNNagent_Priority():
         if self.loggingLevel >= 2:
             self.sw.add_histogram('l1_1.bias', self.model1.l1.bias, episode)
             self.sw.add_histogram('l1_1.weight', self.model1.l1.weight, episode)
-            self.sw.add_histogram('l1_1.weight.grad', self.model1.l1.weight.grad, episode)
+#            self.sw.add_histogram('l1_1.weight.grad', self.model1.l1.weight.grad, episode)
             
             self.sw.add_histogram('l1_2.bias', self.model2.l1.bias, episode)
             self.sw.add_histogram('l1_2.weight', self.model2.l1.weight, episode)
-            self.sw.add_histogram('l1_@.weight.grad', self.model2.l1.weight.grad, episode)
+#            self.sw.add_histogram('l1_@.weight.grad', self.model2.l1.weight.grad, episode)
         
         if self.loggingLevel >= 3:
             self.sw.add_images("CNN In Model1", self.model1.x1_cnn[0].unsqueeze_(1), dataformats='NCHW', global_step = 5)
