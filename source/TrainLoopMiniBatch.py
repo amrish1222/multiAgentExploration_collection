@@ -197,7 +197,7 @@ for episode in tqdm(range(NUM_EPISODES)):
 #                     plt.pause(0.01)
 #                     fig.canvas.draw()
 # =============================================================================
-                dAgent.saveModel("checkpoints")
+                dAgent.saveModel(dAgent.sw.log_dir)
             break
     
 dAgent.saveModel("checkpoints")
