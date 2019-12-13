@@ -39,6 +39,7 @@ class Env:
                                 self.drones,
                                 self.mobilerobots,
                                 self.collectionPts)
+        self.prevCharge = 21.0
             
     def initTotalArea(self):
         # beyond = 0
@@ -90,6 +91,8 @@ class Env:
         self.totalAreaWithDrone = np.copy(self.totalArea)
         if RENDER_PYGAME:
             self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
+        
+        self.prevCharge = 21.0
         return self.step([0]*len(self.mobilerobots),
                          [0]*len(self.drones),
                          [False]*len(self.drones))
@@ -261,7 +264,6 @@ class Env:
 
             reward.append(r)
         return reward        
-        
-                    
+
 
 

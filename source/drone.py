@@ -10,7 +10,7 @@ from constants import *
 np.set_printoptions(precision=3, suppress=True)
 class Drone:
     def __init__(self):
-        self.curPos = np.array([arenaWidth/2,arenaHeight/2])
+        self.curPos = np.array([arenaWidth/2+GRID_SZ/2,arenaHeight/2+GRID_SZ/2])
         self.curVel = np.array([0,0])
         self.size = 0.4 # Diameter of the drone
         self.tourTaken = [] # list of positions that the drone has taken
@@ -78,6 +78,7 @@ class Drone:
         
         distFromParentL1 = np.linalg.norm(self.curPos - self.parentPos, ord  = 1)
         currChargeDist = self.currentCharge * self.maxVelocity
+#        print("currChargeDist ; ", currChargeDist)
         return self.curPos, self.curVel, self.tourTaken, round(currChargeDist, 3), self.isDocked, distFromParentL1
         
         

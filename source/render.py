@@ -100,7 +100,24 @@ class Render:
         area_surf = pygame.surfarray.make_surface(area_surf)
         area_surf = pygame.transform.scale(area_surf, (self.screen_width, self.screen_height))
         self.screen.blit(area_surf, (0,0))
-	
+    
+    def getInput(self):
+        while(1):
+            pygame.event.clear()
+            events = pygame.event.wait()
+            keys=pygame.key.get_pressed()
+            if keys[pygame.K_w]:
+                return 3
+            if keys[pygame.K_a]:
+                return 2
+            if keys[pygame.K_s]:
+                return 1
+            if keys[pygame.K_d]:
+                return 4
+            if keys[pygame.K_x]:
+                return 0
+        
+        
     def render(self,drones,mobilerobots, areaWithDrone):
         events = pygame.event.get()
         keys=pygame.key.get_pressed()
