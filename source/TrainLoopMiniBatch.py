@@ -5,6 +5,8 @@ Created on Thu Nov 14 13:56:01 2019
 
 @author: bala
 """
+import warnings
+warnings.filterwarnings('ignore')
 
 import matplotlib.pyplot as plt
 import time
@@ -30,7 +32,7 @@ NUM_MR = 1
 env = Env(NUM_DR, NUM_MR)
 
 # Parameters
-NUM_EPISODES = 5000
+NUM_EPISODES = 10000
 LEN_EPISODE = 1000
 reward_history = [] # remove
 loss_history = [] # remove
@@ -87,7 +89,7 @@ for episode in tqdm(range(NUM_EPISODES)):
             if RENDER_PYGAME:
                 env.render()
         
-        if step == LEN_EPISODE -1:
+        if step == 200 -1:
             print("200 steps run")
         
         # Randomly sample an action from the action space
@@ -161,7 +163,8 @@ for episode in tqdm(range(NUM_EPISODES)):
         # Current state for next step
         curr_state = next_state
         
-        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+#        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+        if np.count_nonzero(n_localArea[0] == 255) == 7*7 or env.checkClose() or any(n_done):
             # Epsilon Decay
             if dAgent.epsilon >= dAgent.minEpsilon:
                 dAgent.epsilon *= dAgent.epsilonDecay

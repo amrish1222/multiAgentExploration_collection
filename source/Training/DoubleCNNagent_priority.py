@@ -35,16 +35,16 @@ class agentModelCNN2_Double_Priprity(nn.Module):
         self.device = device
         
         # cnn
-        self.cnn1 = nn.Conv2d(in_channels = 1, out_channels = 16, kernel_size = 5, stride = 2)
-        self.cnn2 = nn.Conv2d(in_channels = 16, out_channels = 32, kernel_size = 5, stride = 2)
-        self.cnn3 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 3, stride = 1)
+        self.cnn1 = nn.Conv2d(in_channels = 1, out_channels = 8, kernel_size = 4, stride = 1)
+        self.cnn2 = nn.Conv2d(in_channels = 8, out_channels = 16, kernel_size = 4, stride = 1)
+        self.cnn3 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = 2, stride = 2)
         
         # fc
         self.fcInputs = self.mrPos + self.mrVel + self.drPos + self.dCharge
         self.l1 = nn.Linear(in_features = self.fcInputs, out_features = self.fcInputs)
         
         # concat
-        self.fc1 = nn.Linear(in_features = (6*6*32)+self.fcInputs, out_features = 256)
+        self.fc1 = nn.Linear(in_features = (17*17*16)+self.fcInputs, out_features = 256)
         self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
     
     def forward(self, x1, x2):
@@ -63,7 +63,7 @@ class agentModelCNN2_Double_Priprity(nn.Module):
         x1 = F.relu(self.cnn3(x1))
         if self.loggingLevel == 3:
             self.x1_cnn2 = x1
-            
+#        print("shape",x1.shape)
         #fc
         x2 = F.relu(self.l1(x2))
         
@@ -115,13 +115,13 @@ class DoubleCNNagent_Priority():
         self.trainY1 = []
         self.trainY2 = []
         self.replayMemory = []
-        self.maxReplayMemory = 20000
+        self.maxReplayMemory = 40000
         self.memory = Memory(self.maxReplayMemory)
         self.epsilon = 1.0
         self.minEpsilon = 0.01
-        self.epsilonDecay = 0.9990
+        self.epsilonDecay = 0.99950
         self.discount = 0.95
-        self.learningRate = 0.002
+        self.learningRate = 0.01
         self.batchSize = 128
         self.envActions = env.getActionSpace()
         self.nActions = len(self.envActions)
