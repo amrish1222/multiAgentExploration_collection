@@ -42,8 +42,8 @@ dispFlag = True
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
 #dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
 #dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
-#dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
-dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
+#dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \
@@ -88,7 +88,6 @@ for episode in tqdm(range(NUM_EPISODES)):
         if episode % 25 == 0 and dispFlag or episode > 1:
             if RENDER_PYGAME:
                 env.render()
-        
         if step == 200 -1:
             print("200 steps run")
         

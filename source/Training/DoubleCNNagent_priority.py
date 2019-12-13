@@ -44,7 +44,7 @@ class agentModelCNN2_Double_Priprity(nn.Module):
         self.l1 = nn.Linear(in_features = self.fcInputs, out_features = self.fcInputs)
         
         # concat
-        self.fc1 = nn.Linear(in_features = (17*17*16)+self.fcInputs, out_features = 256)
+        self.fc1 = nn.Linear(in_features = (22*22*16)+self.fcInputs, out_features = 256)
         self.fc2 = nn.Linear(in_features = 256, out_features = len(env.getActionSpace()))
     
     def forward(self, x1, x2):

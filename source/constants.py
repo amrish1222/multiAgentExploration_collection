@@ -29,7 +29,7 @@ maxMobileRobVelocity=0.25
 ## Drone Constants
 
 maxDroneVelocity= 0.5
-dockingThreshold = maxDroneVelocity * timeStep * 1.1
+dockingThreshold = maxDroneVelocity * timeStep * 1.0
 MAX_CHARGE = 25
 
 
@@ -43,7 +43,7 @@ MAX_CHARGE = 25
 #RETURN_POSSIBLE_RWD  = -50
 
 ## Area
-GRID_SZ = maxDroneVelocity * timeStep * 1.2
+GRID_SZ = maxDroneVelocity * timeStep * 1.0
 G_MAIN = int(arenaWidth//GRID_SZ)
 LOCAL_ENV_SZ = maxDroneVelocity * MAX_CHARGE * 2
 G_LOCAL = int(LOCAL_ENV_SZ//GRID_SZ)
