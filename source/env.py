@@ -39,6 +39,7 @@ class Env:
                                 self.drones,
                                 self.mobilerobots,
                                 self.collectionPts)
+        self.prevCharge = 21.0
             
     def initTotalArea(self):
         # beyond = 0
@@ -90,6 +91,8 @@ class Env:
         self.totalAreaWithDrone = np.copy(self.totalArea)
         if RENDER_PYGAME:
             self.display.reset(self.drones, self.mobilerobots, self.collectionPts)
+        
+        self.prevCharge = 21.0
         return self.step([0]*len(self.mobilerobots),
                          [0]*len(self.drones),
                          [False]*len(self.drones))
@@ -206,7 +209,29 @@ class Env:
             self.totalArea[x+G_PADDING, y+G_PADDING] = 255
             self.totalAreaWithDrone = np.copy(self.totalArea)
             self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
-        
+            # add obstacles
+            cx = int(arenaWidth//2//GRID_SZ) + G_PADDING
+            cy = int(arenaHeight//2//GRID_SZ) + G_PADDING
+            self.totalAreaWithDrone[cx - 2, cy - 3 : cy - 1] = 200
+            self.totalAreaWithDrone[cx - 3 : cx - 1, cy - 2] = 200
+            
+            self.totalAreaWithDrone[cx + 2, cy + 1 : cy + 3] = 200
+            self.totalAreaWithDrone[cx + 1 : cx + 3, cy + 2] = 200
+            
+            self.totalAreaWithDrone[cx - 2, cy + 1 : cy + 3] = 200
+            self.totalAreaWithDrone[cx - 3 : cx - 1, cy + 2] = 200
+            
+            self.totalAreaWithDrone[cx + 2, cy - 3 : cy - 1] = 200
+            self.totalAreaWithDrone[cx + 1 : cx + 3, cy - 2] = 200
+            
+            # add wall
+            self.totalAreaWithDrone[cx - 30 : cx + 30 , cy - 30] = 200
+            self.totalAreaWithDrone[cx - 30 : cx + 30 , cy + 30] = 200
+            self.totalAreaWithDrone[cx - 30 , cy - 30 : cy + 30] = 200
+            self.totalAreaWithDrone[cx + 30 , cy - 30 : cy + 30] = 200
+      
+
+
     def getReward(self):
         reward = []
         for drone in self.drones:
@@ -221,28 +246,24 @@ class Env:
             
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
                 # unexplored region => new area 
-                new_area = 1
+                new_area = 5
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
                 # explored region => old area
-                new_area = 0
+                new_area = -5
             else:
                 new_area = 0
             
-            r = ( (5 * c_d) - (5 * (1-c_d)) ) ** 1-new_area
+            if self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] == 200:
+                # obstacle
+#                print("obs")
+                obs = -1000
+            else:
+                obs = 0
             
-#            r = 0
-#            if new_area == False and c_d <= 0 :
-#                r = 10
-#            if new_area == False and c_d > 0 :
-#                r = -10
-#            if new_area == True and c_d <= 0 :
-#                r = 0
-#            if new_area == True and c_d <= 0 :
-#                r = 10
-            if rem_charge == 0 and l1_dist2par != 0:
-                r = -1000
+            r = new_area + obs
+
             reward.append(r)
-        return reward
-                
+        return reward        
+
 
 

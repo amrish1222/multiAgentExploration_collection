@@ -5,6 +5,8 @@ Created on Thu Nov 14 13:56:01 2019
 
 @author: bala
 """
+import warnings
+warnings.filterwarnings('ignore')
 
 import matplotlib.pyplot as plt
 import time
@@ -15,6 +17,9 @@ from tqdm import tqdm
 
 import Training.SimpleNNagent as sNN
 import Training.SimpleCNNagent as cNN
+import Training.DoubleCNNagent as dcNN
+import Training.DoubleCNNagent_priority as dcNN_p
+import Training.DoubleCNNagent_priority_Noisy as dcNN_pn
 from env import Env
 from drone import Drone
 from mobile_robot import MobileRobot
@@ -28,14 +33,17 @@ env = Env(NUM_DR, NUM_MR)
 
 # Parameters
 NUM_EPISODES = 5000
-LEN_EPISODE = 1000
+LEN_EPISODE = 100
 reward_history = [] # remove
 loss_history = [] # remove
 
 dispFlag = True
 
 #dAgent = sNN.SimpleNNagent(env, loggingLevel = 1)
-dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
+#dAgent = cNN.SimpleCNNagent(env, loggingLevel = 3)
+#dAgent = dcNN.DoubleCNNagent(env, loggingLevel = 3)
+dAgent = dcNN_p.DoubleCNNagent_Priority(env, loggingLevel = 3)
+#dAgent = dcNN_pn.DoubleCNNagent_Priority_Noisy(env, loggingLevel = 3)
 
 curr_state = env.reset() # mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, done
 c_mrPos, \
@@ -77,11 +85,10 @@ for episode in tqdm(range(NUM_EPISODES)):
     for step in range(LEN_EPISODE):
         # Comment to stop rendering the environment
         # If you don't render, you can speed things up
-        if episode % 25 == 0 and dispFlag or episode > 500:
+        if episode % 25 == 0 and dispFlag or episode > 1:
             if RENDER_PYGAME:
                 env.render()
-        
-        if step == LEN_EPISODE -1:
+        if step == 200 -1:
             print("200 steps run")
         
         # Randomly sample an action from the action space
@@ -155,7 +162,8 @@ for episode in tqdm(range(NUM_EPISODES)):
         # Current state for next step
         curr_state = next_state
         
-        if not np.any(n_localArea[0] == 50) or env.checkClose() or any(n_done):
+#        if np.count_nonzero(n_localArea[0] == 255) == 7*7 or env.checkClose() or any(n_done):
+        if not np.any(n_localArea[0] == 50) or env.checkClose() or step == LEN_EPISODE-1 :#any(n_done):
             # Epsilon Decay
             if dAgent.epsilon >= dAgent.minEpsilon:
                 dAgent.epsilon *= dAgent.epsilonDecay
@@ -189,7 +197,7 @@ for episode in tqdm(range(NUM_EPISODES)):
 #                     plt.pause(0.01)
 #                     fig.canvas.draw()
 # =============================================================================
-                dAgent.saveModel("checkpoints")
+                dAgent.saveModel(dAgent.sw.log_dir)
             break
     
 dAgent.saveModel("checkpoints")

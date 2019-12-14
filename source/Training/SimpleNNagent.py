@@ -193,7 +193,7 @@ class SimpleNNagent():
         self.sw.add_scalar('Episode Length', lenEpisode, episode)
         self.sw.add_scalar('Epsilon', self.epsilon, episode)
         
-        if self.loggingLevel == 2:
+        if self.loggingLevel >= 2:
             self.sw.add_histogram('l1.bias', self.model.l1.bias, episode)
             self.sw.add_histogram('l1.weight', self.model.l1.weight, episode)
             self.sw.add_histogram('l1.weight.grad', self.model.l1.weight.grad, episode)
