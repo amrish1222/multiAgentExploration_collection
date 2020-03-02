@@ -29,7 +29,7 @@ actionSpace = env.getActionSpace()
 stateSpace = env.getStateSpace()
 
 for episodes in range(NUM_EPISODES):
-    print("new episode")
+    print(f"episode {episodes}")
     env.reset()
     while True:
         droneActions = []
@@ -40,13 +40,13 @@ for episodes in range(NUM_EPISODES):
             docks.append(False)
         mrActions = []
         for i in range(1):
-            mrActions.append(mAgent.getAction())
-#            mrActions.append(2)
+            #mrActions.append(mAgent.getAction())
+            mrActions.append(0)
         
     #    dronePos, droneVel, droneCharge, dock, done= env.stepDrones(droneActions, docks)
     #    mrPos, mrVel,localArea = env.stepMobileRobs(mrActions)
         mrPos, mrVel, localArea, dronePos, droneVel, droneCharge, dock, reward, done = env.step(mrActions, droneActions, docks)
-        print(dronePos, mrPos, droneCharge)
+        #print(dronePos, mrPos, droneCharge)
         env.render()
         
         # check if any unexploredArea in local Area for static MobileRobot test

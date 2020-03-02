@@ -203,19 +203,20 @@ class Env:
             self.totalAreaWithDrone[x+G_PADDING, y+G_PADDING] = 100 
         
     def getReward(self):
-        reward = []
+        reward = 0
         for drone in self.drones:
             states = drone.getState()
             x,y = states[0]
             x = int(x//GRID_SZ)
             y = int(y//GRID_SZ)
             if self.totalArea[x+G_PADDING, y+G_PADDING] == 50:
-                reward.append(DRONE_NEW_AREA_REWARD)
+                #reward.append(DRONE_NEW_AREA_REWARD)
+                reward+=DRONE_NEW_AREA_REWARD
             elif self.totalArea[x+G_PADDING, y+G_PADDING] == 255:
-                reward.append(DRONE_OLD_AREA_REWARD)
-            else:
-                reward.append(0)
-                
+                reward+=DRONE_OLD_AREA_REWARD
+                #reward.append(DRONE_OLD_AREA_REWARD)
+            # else:
+            #     reward.append(0)
             if states[3] <= 0:
                 reward[-1] += DRONE_DISCHARGED_REWARD
             
